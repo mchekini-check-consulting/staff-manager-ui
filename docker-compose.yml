@@ -5,4 +5,8 @@ services:
     image: mchekini/staff-manager-ui:1.0
     ports:
       - "80:80"
-    network_mode: bridge
+
+networks:
+  default:
+    external:
+      name: staff-manager
