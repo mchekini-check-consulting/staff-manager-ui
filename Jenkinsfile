@@ -4,6 +4,15 @@ node("ci-node") {
     checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mchekini-check-consulting/staff-manager-ui.git']])
   }
 
+  stage("Quality Analyses"){
+
+    sh "/opt/sonar-scanner/bin/sonar-scanner \\\n" +
+      "  -Dsonar.projectKey=staff-manager-ui \\\n" +
+      "  -Dsonar.sources=./src \\\n" +
+      "  -Dsonar.host.url=http://ci.check-consulting.net:11001 \\\n" +
+      "  -Dsonar.token=sqp_a818bc464ceb4985bea7af89114471cde4b9842b"
+  }
+
   stage("build") {
     sh "npm install"
     sh "npm run build"
