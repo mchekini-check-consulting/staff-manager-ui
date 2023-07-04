@@ -13,6 +13,7 @@ import {FicheDePaieComponent} from './features/fiche-de-paie/fiche-de-paie.compo
 import {DocumentationComponent} from './features/documentation/documentation.component';
 import {ProfileInformationComponent} from './features/profile-information/profile-information.component';
 import {HttpClientModule} from "@angular/common/http";
+import {OAuthModule} from "angular-oauth2-oidc";
 
 @NgModule({
   declarations: [
@@ -25,12 +26,13 @@ import {HttpClientModule} from "@angular/common/http";
     JustificatifsComponent,
     FicheDePaieComponent,
     DocumentationComponent,
-    ProfileInformationComponent
+    ProfileInformationComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    OAuthModule.forRoot()
 
   ],
   providers: [],
