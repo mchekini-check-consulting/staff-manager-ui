@@ -12,8 +12,9 @@ import {JustificatifsComponent} from './features/justificatifs/justificatifs.com
 import {FicheDePaieComponent} from './features/fiche-de-paie/fiche-de-paie.component';
 import {DocumentationComponent} from './features/documentation/documentation.component';
 import {ProfileInformationComponent} from './features/profile-information/profile-information.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {OAuthModule} from "angular-oauth2-oidc";
+import {HttpRequestInterceptor} from "./core/interceptors/HttpRequestInterceptor";
 
 @NgModule({
   declarations: [
@@ -33,9 +34,14 @@ import {OAuthModule} from "angular-oauth2-oidc";
     AppRoutingModule,
     HttpClientModule,
     OAuthModule.forRoot()
-
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpRequestInterceptor,
+      multi: true,
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
