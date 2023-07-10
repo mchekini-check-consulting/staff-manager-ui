@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AppDetailsService} from "../../../service/app-details-service";
+import {filter} from "rxjs";
+import {OAuthService} from "angular-oauth2-oidc";
 
 declare interface RouteInfo {
   path: string;
@@ -27,7 +29,16 @@ export class SidebarComponent implements OnInit {
   menuItems: RouteInfo[] = [];
   version = "";
 
-  constructor(private appDetails: AppDetailsService) {
+  constructor(private appDetails: AppDetailsService, private oauthService: OAuthService) {
+    this.oauthService.events
+      .pipe(filter(e => e.type === 'token_received'))
+      .subscribe(_ => {
+        // @ts-ignore
+        this.appDetails.getAppDetails().subscribe(response => {
+          this.version = response.version;
+        })
+      });
+
   }
 
   ngOnInit() {
