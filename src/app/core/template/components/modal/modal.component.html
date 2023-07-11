@@ -1,0 +1,153 @@
+<form
+  [formGroup]="createCraForm"
+  (ngSubmit)="onSaveCra()"
+  autocomplete="off"
+  novalidate
+>
+  <div class="dialog__header">
+    <h2 mat-dialog-title>{{ dialogTitle }}</h2>
+    <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+      <mat-icon class="close-icon" color="primary">close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="form__cra__container">
+    <div class="form__cra">
+      <mat-form-field>
+        <mat-label>Date de début</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startDate"
+          placeholder="Date de début"
+          formControlName="startDate"
+          id="startDate"
+          (click)="startDate.open()"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startDate></mat-datepicker>
+        <mat-error *ngIf="hasError('startDate', 'required')"
+          >Ce champs est obligatoire</mat-error
+        >
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Date de fin</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endDate"
+          placeholder="Date de fin"
+          formControlName="endDate"
+          id="endDate"
+          (click)="endDate.open()"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endDate></mat-datepicker>
+        <mat-error *ngIf="hasError('endDate', 'required')"
+          >Ce champs est obligatoire</mat-error
+        >
+      </mat-form-field>
+    </div>
+
+    <div formArrayName="activities">
+      <div *ngFor="let f of activities.controls; let i = index">
+        <div [formGroupName]="i">
+          <div class="form__cra">
+            <mat-form-field appearance="outline">
+              <mat-label>Quantité {{ i + 1 }} </mat-label>
+              <mat-select name="quantity" formControlName="quantity">
+                <mat-option
+                  *ngFor="let quantity of quantities"
+                  [value]="quantity"
+                >
+                  {{ quantity }}
+                </mat-option>
+              </mat-select>
+
+              <mat-error
+                *ngIf="
+                  getActivitiesArr(i).controls['quantity'].hasError(
+                    'required'
+                  ) && getActivitiesArr(i).controls['quantity'].touched
+                "
+                >Ce champs est obligatoire</mat-error
+              >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Catégorie {{ i + 1 }} </mat-label>
+              <mat-select name="category" formControlName="category">
+                <mat-option
+                  *ngFor="let category of categories"
+                  [value]="category.value"
+                >
+                  {{ category.label }}
+                </mat-option>
+              </mat-select>
+
+              <mat-error
+                *ngIf="
+                  getActivitiesArr(i).controls['category'].hasError(
+                    'required'
+                  ) && getActivitiesArr(i).controls['category'].touched
+                "
+                >Ce champs est obligatoire</mat-error
+              >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Commentaire {{ i + 1 }} </mat-label>
+              <textarea
+                matInput
+                ormControlName="comment"
+                name="comment"
+                id="{{ 'comment' + i }}"
+              ></textarea>
+            </mat-form-field>
+          </div>
+
+          <button
+            type="button"
+            mat-mini-fab
+            color="primary"
+            (click)="onRemoveActivity(i)"
+            *ngIf="i >= 1"
+          >
+            <mat-icon aria-hidden="false" fontIcon="remove">-</mat-icon>
+          </button>
+        </div>
+      </div>
+      <button
+        type="button"
+        mat-mini-fab
+        color="primary"
+        (click)="onAddActivity()"
+        [disabled]="activitiesLength() >= 4"
+      >
+        <mat-icon aria-hidden="false" fontIcon="add-circle"></mat-icon>
+      </button>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog__footer">
+    <button
+      type="submit"
+      mat-raised-button
+      color="primary"
+      [disabled]="createCraForm.invalid"
+    >
+      Enregistrer
+    </button>
+    <button type="button" mat-raised-button color="primary">Modifier</button>
+    <button type="button" mat-button color="primary" (click)="onCancel()">
+      Annuler
+    </button>
+  </mat-dialog-actions>
+</form>
+
+<!-- [disabled]="!createCraForm.valid" -->

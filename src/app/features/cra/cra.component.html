@@ -1,5 +1,19 @@
-<h3>Compte Rendu d'activité</h3>
+<div>
+  <h2>Compte rendu d'activité</h2>
 
-<!-- <button (click)="toggleWeekends()">toggle weekends</button>
- -->
-<full-calendar [options]="calendarOptions"></full-calendar>
+  <!-- <button (click)="toggleWeekends()">toggle weekends</button> -->
+  <full-calendar [options]="calendarOptions"></full-calendar>
+
+  <button
+    type="submit"
+    mat-raised-button
+    color="primary"
+    (click)="onSubmitCra()"
+    [disabled]="!isFormValid"
+    class="submit__cra__btn"
+  >
+    Soumettre mon CRA pour validation
+  </button>
+
+  {{ this.craObj }}
+</div>
