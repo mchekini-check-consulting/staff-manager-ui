@@ -1,5 +1,152 @@
-<h3>Compte Rendu d'activité</h3>
+<div>
+  <h2>Compte Rendu d'activité</h2>
 
-<!-- <button (click)="toggleWeekends()">toggle weekends</button>
- -->
-<full-calendar [options]="calendarOptions"></full-calendar>
+  <!-- <button (click)="toggleWeekends()">toggle weekends</button> -->
+  <full-calendar [options]="calendarOptions"></full-calendar>
+
+  <!-- <form
+    [formGroup]="createCraForm"
+    (ngSubmit)="onSaveCra()"
+    autocomplete="off"
+    novalidate
+  >
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <div fxFlex="100%">
+        <mat-form-field>
+          <input
+            matInput
+            [matDatepicker]="startingDate"
+            placeholder="Date de début"
+            formControlName="startingDate"
+            id="startingDate"
+            (click)="startingDate.open()"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="startingDate"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #startingDate></mat-datepicker>
+          <mat-error *ngIf="hasError('startingDate', 'required')"
+            >Ce champs est obligatoire</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field>
+          <input
+            matInput
+            [matDatepicker]="endingDate"
+            placeholder="Date de fin"
+            formControlName="endingDate"
+            id="endingDate"
+            (click)="endingDate.open()"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="endingDate"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #endingDate></mat-datepicker>
+          <mat-error *ngIf="hasError('endingDate', 'required')"
+            >Ce champs est obligatoire</mat-error
+          >
+        </mat-form-field>
+      </div>
+
+      <div formArrayName="forms" fxFlex="100%">
+        <div *ngFor="let f of forms.controls; let i = index">
+          <div [formGroupName]="i">
+            <mat-form-field appearance="outline">
+              <mat-label>Quantité {{ i + 1 }} </mat-label>
+              <mat-select name="hour" formControlName="quantity">
+                <mat-option
+                  *ngFor="let quantity of quantities"
+                  [value]="quantity"
+                >
+                  {{ quantity }}
+                </mat-option>
+              </mat-select>
+
+              <mat-error
+                *ngIf="
+                  getFormsArr(i).controls['quantity'].hasError('required') &&
+                  getFormsArr(i).controls['quantity'].touched
+                "
+                >Ce champs est obligatoire</mat-error
+              >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Catégorie {{ i + 1 }} </mat-label>
+              <mat-select name="category" formControlName="category">
+                <mat-option
+                  *ngFor="let category of categories"
+                  [value]="category"
+                >
+                  {{ category }}
+                </mat-option>
+              </mat-select>
+
+              <mat-error
+                *ngIf="
+                  getFormsArr(i).controls['category'].hasError('required') &&
+                  getFormsArr(i).controls['category'].touched
+                "
+                >Ce champs est obligatoire</mat-error
+              >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Commentaire {{ i + 1 }} </mat-label>
+              <textarea
+                matInput
+                ormControlName="comment"
+                name="comment"
+                id="{{ 'comment' + i }}"
+              ></textarea>
+            </mat-form-field>
+
+            <button
+              type="button"
+              mat-mini-fab
+              color="primary"
+              (click)="onRemoveForm(i)"
+              *ngIf="i >= 1"
+            >
+              <mat-icon aria-hidden="false" fontIcon="minus-circle">-</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          mat-mini-fab
+          color="primary"
+          (click)="onAddForm()"
+        >
+          <mat-icon aria-hidden="false" fontIcon="add-circle"></mat-icon>
+        </button>
+      </div>
+
+      <div fxFlex="100%">
+        <button
+          type="submit"
+          mat-raised-button
+          color="primary"
+          [disabled]="!createCraForm.valid"
+        >
+          Enregistrer
+        </button>
+        <button type="button" mat-button color="primary" (click)="onCancel()">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </form> -->
+
+  <button
+    type="submit"
+    mat-raised-button
+    color="primary"
+    (click)="onSubmitCra()"
+  >
+    Soumettre mon CRA pour validation
+  </button>
+</div>
