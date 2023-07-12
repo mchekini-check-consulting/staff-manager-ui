@@ -22,7 +22,7 @@ interface ICra {
 export class CraService {
   constructor(private http: HttpClient) {}
 
-  createCra(cra: CraModel): Observable<CraModel> {
-    return this.http.post<CraModel>('/api/v1/collaborator/cra', cra);
+  createCra(cra: any): Observable<CraModel> {
+    return this.http.post<any>('/api/v1/collaborator/cra', cra);
   }
 }
