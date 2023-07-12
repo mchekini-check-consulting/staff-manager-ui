@@ -10,6 +10,7 @@ import { ErrorHandlerService } from 'src/app/core/template/components/error-dial
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
 import { SuccessDialogComponent } from 'src/app/core/template/components/success-dialog/success-dialog.component';
 import { CraService } from '../../core/service/cra-service';
+import frLocale from '@fullcalendar/core/locales/fr';
 
 @Component({
   selector: 'app-cra',
@@ -64,9 +65,12 @@ export class CraComponent {
   ngOnInit() {}
 
   calendarOptions: CalendarOptions = {
+    locales: [frLocale],
+    locale: 'fr',
     initialView: 'dayGridMonth',
     // dateClick: this.handleDateClick.bind(this), // MUST ensure `this` context is maintained
-    events: [...this.HOLIDAYS],
+    events: [],
+    initialEvents: [...this.HOLIDAYS],
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     headerToolbar: {
       left: 'prev,next today',
