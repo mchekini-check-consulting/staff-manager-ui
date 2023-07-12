@@ -6,17 +6,29 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { ErrorHandlerService } from 'src/app/core/template/components/error-dialog/error-handler.service';
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
-import { CraService } from '../../core/service/cra-service';
 import { SuccessDialogComponent } from 'src/app/core/template/components/success-dialog/success-dialog.component';
-import { ErrorDialogComponent } from 'src/app/core/template/components/error-dialog/error-dialog.component';
+import { CraService } from '../../core/service/cra-service';
 
 @Component({
   selector: 'app-cra',
   templateUrl: './cra.component.html',
 })
 export class CraComponent {
-  categories: string[] = ['Noël'];
+  categories: string[] = [
+    "Jour de l'An",
+    'Lundi de Pâques',
+    'Fête du travail',
+    'Armistice 1945',
+    'Ascension',
+    'Lundi de Pentecôte',
+    'Fête nationale',
+    'Assomption',
+    'Toussaint',
+    'Armistice 1918',
+    'Noël',
+  ];
   HOLIDAYS = [
     { title: "Jour de l'An", date: '2023-01-01' },
     { title: 'Lundi de Pâques', date: '2023-04-10' },
@@ -30,7 +42,6 @@ export class CraComponent {
     { title: 'Armistice 1918', date: '2023-11-11' },
     { title: 'Noël', date: '2023-12-25' },
   ];
-
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
   title: string = "Création d'un rebdu de compte";
   submitted = false;
@@ -46,12 +57,11 @@ export class CraComponent {
   constructor(
     public dialog: MatDialog,
     private fb: FormBuilder,
-    private craService: CraService
+    private craService: CraService,
+    private errorService: ErrorHandlerService
   ) {}
 
-  ngOnInit() {
-    // this.createCraForm();
-  }
+  ngOnInit() {}
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
@@ -63,7 +73,7 @@ export class CraComponent {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
-    // eventBackgroundColor: 'green',
+    eventBackgroundColor: 'green',
     weekends: true,
     editable: true,
     selectable: true,
@@ -132,13 +142,13 @@ export class CraComponent {
   onRemoveForm(index: number) {
     this.forms.removeAt(index);
   }
+
   onSaveCra(): void {
     this.submitted = true;
 
     if (this.createCraForm.invalid) return;
     console.log(JSON.stringify(this.createCraForm.value, null, 2));
   }
-
   onSubmitCra(): void {
     this.submitted = true;
 
@@ -151,12 +161,12 @@ export class CraComponent {
           SuccessDialogComponent,
           this.dialogConfig
         );
-        dialogRef.afterClosed().subscribe((result) => {});
+        // dialogRef.afterClosed().subscribe((result) => {});
       },
       (err) => {
-        this.dialogConfig.data = { errorMessage: err.message };
-        this.dialog.open(ErrorDialogComponent, this.dialogConfig);
         console.log('ERR: ', err);
+        this.dialogConfig.data = { errorMessage: err.message };
+        this.errorService.handleError("L'erreur !", this.dialogConfig);
       }
     );
   }
