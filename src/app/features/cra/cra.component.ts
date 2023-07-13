@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CalendarOptions, DateSelectArg } from '@fullcalendar/core';
+import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
@@ -10,8 +11,6 @@ import { ErrorHandlerService } from 'src/app/core/template/components/error-dial
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
 import { SuccessDialogComponent } from 'src/app/core/template/components/success-dialog/success-dialog.component';
 import { CraService } from '../../core/service/cra-service';
-import frLocale from '@fullcalendar/core/locales/fr';
-import { isWeekend } from 'date-fns';
 
 export class LocalStorage {
   onSaveItem(key: string, item: any) {
@@ -99,7 +98,6 @@ export class CraComponent {
     locales: [frLocale],
     locale: 'fr',
     initialView: 'dayGridMonth',
-
     // dateClick: this.handleDateClick.bind(this), // MUST ensure `this` context is maintained
     events: [],
     initialEvents: [...this.HOLIDAYS],
@@ -109,8 +107,7 @@ export class CraComponent {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
-    // eventBackgroundColor: 'green',
-    eventDisplay: 'background',
+    eventBackgroundColor: 'green',
     weekends: true,
     editable: true,
     selectable: true,
@@ -128,13 +125,14 @@ export class CraComponent {
   }
 
   handleSeclectedDay(selectInfo: DateSelectArg) {
-    const selectedDay = selectInfo.start;
-
-    // console.log(selectedDay, isWeekend(selectedDay));
-    const calendarApi = selectInfo.view.calendar;
-    calendarApi.unselect(); // clear selected date
-
-    this.openModal();
+    this.dialog.open(ModalComponent, {
+      height: '600px',
+      width: '600px',
+      disableClose: true,
+      data: {
+        date: selectInfo.start,
+      },
+    });
   }
 
   // ********* FORM (handling) *********

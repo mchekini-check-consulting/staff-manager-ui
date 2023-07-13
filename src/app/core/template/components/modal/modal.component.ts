@@ -1,6 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { format, parseISO } from 'date-fns';
 import { LocalStorage } from 'src/app/features/cra/cra.component';
 
 @Component({
@@ -45,10 +46,10 @@ export class ModalComponent {
   ];
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
   dialogTitle: string = "Création d'un rebdu de compte";
-  submitted = false;
 
   createForm() {
     return this.fb.group({
+      date: ['', [Validators.required]],
       quantity: ['', [Validators.required]],
       category: ['', [Validators.required]],
       comment: [''],
@@ -56,38 +57,43 @@ export class ModalComponent {
   }
 
   createCraForm = this.fb.group({
-    startingDate: ['', [Validators.required]],
-    endingDate: ['', [Validators.required]],
-    forms: this.fb.array([this.createForm()]),
+    activities: this.fb.array([this.createForm()]),
   });
 
-  get forms(): FormArray {
-    return <FormArray>this.createCraForm.get('forms');
+  get activities(): FormArray {
+    return <FormArray>this.createCraForm.get('activities');
   }
 
-  getFormsArr(index: number): FormGroup {
-    const formsArr = this.createCraForm.get('forms') as FormArray;
+  getActivitiesArr(index: number): FormGroup {
+    const formsArr = this.createCraForm.get('activities') as FormArray;
     return formsArr.controls[index] as FormGroup;
+  }
+
+  activitiesLength(): number {
+    return this.createCraForm.controls.activities.length;
+  }
+
+  onAddActivity() {
+    if (this.createCraForm.controls.activities.length >= 2) return;
+    this.activities.push(this.createForm());
+  }
+  onRemoveActivity(index: number) {
+    this.activities.removeAt(index);
   }
 
   hasError(controlName: string, errorName: string) {
     return this.createCraForm.get(controlName)?.hasError(errorName);
   }
 
-  formsLength(): number {
-    return this.createCraForm.controls.forms.length;
-  }
-
-  onAddForm() {
-    if (this.createCraForm.controls.forms.length >= 2) return;
-    this.forms.push(this.createForm());
-  }
-  onRemoveForm(index: number) {
-    this.forms.removeAt(index);
-  }
   onSaveCra(): void {
     if (this.createCraForm.invalid) return;
-    console.log(JSON.stringify(this.createCraForm.value, null, 2));
+
+    const activities = this.createCraForm.value.activities?.map((act) => {
+      return { ...act, date: format(this.data.date, 'dd-MM-yyyy') };
+    });
+
+    console.log(activities);
+
     new LocalStorage().onSaveItem('save-cra', this.createCraForm.value);
   }
   onCancel(): void {

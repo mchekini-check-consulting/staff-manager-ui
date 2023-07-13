@@ -8,7 +8,7 @@
   <mat-dialog-content>
     <div fxLayout="column" fxLayoutAlign="center center">
       <div fxFlex="100%">
-        <mat-form-field>
+        <!-- <mat-form-field>
           <mat-label>Date de début</mat-label>
           <input
             matInput
@@ -46,11 +46,11 @@
           <mat-error *ngIf="hasError('endingDate', 'required')"
             >Ce champs est obligatoire</mat-error
           >
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
 
-      <div formArrayName="forms" fxFlex="100%">
-        <div *ngFor="let f of forms.controls; let i = index">
+      <div formArrayName="activities" fxFlex="100%">
+        <div *ngFor="let f of activities.controls; let i = index">
           <div [formGroupName]="i">
             <div fxFlex="100%">
               <mat-form-field appearance="outline">
@@ -66,8 +66,9 @@
 
                 <mat-error
                   *ngIf="
-                    getFormsArr(i).controls['quantity'].hasError('required') &&
-                    getFormsArr(i).controls['quantity'].touched
+                    getActivitiesArr(i).controls['quantity'].hasError(
+                      'required'
+                    ) && getActivitiesArr(i).controls['quantity'].touched
                   "
                   >Ce champs est obligatoire</mat-error
                 >
@@ -86,8 +87,9 @@
 
                 <mat-error
                   *ngIf="
-                    getFormsArr(i).controls['category'].hasError('required') &&
-                    getFormsArr(i).controls['category'].touched
+                    getActivitiesArr(i).controls['category'].hasError(
+                      'required'
+                    ) && getActivitiesArr(i).controls['category'].touched
                   "
                   >Ce champs est obligatoire</mat-error
                 >
@@ -110,7 +112,7 @@
               type="button"
               mat-mini-fab
               color="primary"
-              (click)="onRemoveForm(i)"
+              (click)="onRemoveActivity(i)"
               *ngIf="i >= 1"
             >
               <mat-icon aria-hidden="false" fontIcon="remove">-</mat-icon>
@@ -121,8 +123,8 @@
           type="button"
           mat-mini-fab
           color="primary"
-          (click)="onAddForm()"
-          [disabled]="formsLength() >= 2"
+          (click)="onAddActivity()"
+          [disabled]="activitiesLength() >= 2"
         >
           <mat-icon aria-hidden="false" fontIcon="add-circle"></mat-icon>
         </button>
@@ -131,16 +133,11 @@
   </mat-dialog-content>
 
   <mat-dialog-actions layout="row" layout-align="end end">
-    <button
-      type="submit"
-      mat-raised-button
-      color="primary"
-      [disabled]="!createCraForm.valid"
-    >
-      Enregistrer
-    </button>
+    <button type="submit" mat-raised-button color="primary">Enregistrer</button>
     <button type="button" mat-button color="primary" (click)="onCancel()">
       Annuler
     </button>
   </mat-dialog-actions>
 </form>
+
+<!-- [disabled]="!createCraForm.valid" -->
