@@ -11,6 +11,34 @@ import { ModalComponent } from 'src/app/core/template/components/modal/modal.com
 import { SuccessDialogComponent } from 'src/app/core/template/components/success-dialog/success-dialog.component';
 import { CraService } from '../../core/service/cra-service';
 import frLocale from '@fullcalendar/core/locales/fr';
+import { isWeekend } from 'date-fns';
+
+export class LocalStorage {
+  onSaveItem(key: string, item: any) {
+    try {
+      localStorage.setItem(key, JSON.stringify(item));
+    } catch (err) {
+      console.log('Err: ', err);
+    }
+  }
+  onGetItem(key: string) {
+    try {
+      const value = localStorage.getItem(key);
+      if (value != '' && value != null && typeof value != 'undefined') {
+        return JSON.parse(value!);
+      }
+    } catch (err) {
+      console.log('ERR: ', err);
+    }
+  }
+  onRemoveItem(key: string) {
+    try {
+      localStorage.removeItem(key);
+    } catch (err) {
+      console.log('Err: ', err);
+    }
+  }
+}
 
 @Component({
   selector: 'app-cra',
@@ -37,7 +65,10 @@ export class CraComponent {
     { title: 'Armistice 1945', date: '2023-05-08' },
     { title: 'Ascension', date: '2023-05-18' },
     { title: 'Lundi de Pentecôte', date: '2023-05-29' },
-    { title: 'Fête nationale', date: '2023-07-14' },
+    {
+      title: 'Fête nationale',
+      date: '2023-07-14',
+    },
     { title: 'Assomption', date: '2023-08-15' },
     { title: 'Toussaint', date: '2023-11-01' },
     { title: 'Armistice 1918', date: '2023-11-11' },
@@ -59,7 +90,7 @@ export class CraComponent {
     public dialog: MatDialog,
     private fb: FormBuilder,
     private craService: CraService,
-    private errorService: ErrorHandlerService
+    private errorService: ErrorHandlerService // private storage: LocalStorage
   ) {}
 
   ngOnInit() {}
@@ -68,6 +99,7 @@ export class CraComponent {
     locales: [frLocale],
     locale: 'fr',
     initialView: 'dayGridMonth',
+
     // dateClick: this.handleDateClick.bind(this), // MUST ensure `this` context is maintained
     events: [],
     initialEvents: [...this.HOLIDAYS],
@@ -77,23 +109,14 @@ export class CraComponent {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
-    eventBackgroundColor: 'green',
+    // eventBackgroundColor: 'green',
+    eventDisplay: 'background',
     weekends: true,
     editable: true,
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleSeclectedDay.bind(this),
-    // dayCellContent: (dayRenderInfo: any) => {
-    //   console.log('sd: ', dayRenderInfo);
-    //   // let dateMoment = moment(dayRenderInfo.date);
-    //   // if (dayRenderInfo.date === 6 || dayRenderInfo === 0) {
-    //   //   dayRenderInfo.el.style.backgroundColor = '#d6e7e1';
-    //   // } else {
-    //   //   dayRenderInfo.el.style.backgroundColor = 'white';
-    //   // }
-    //   // return dayRenderInfo;
-    // },
   };
 
   openModal(): void {
@@ -105,61 +128,24 @@ export class CraComponent {
   }
 
   handleSeclectedDay(selectInfo: DateSelectArg) {
-    console.log(selectInfo);
+    const selectedDay = selectInfo.start;
+
+    // console.log(selectedDay, isWeekend(selectedDay));
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect(); // clear selected date
 
     this.openModal();
   }
 
-  // ********* FORM *********
-  createForm() {
-    return this.fb.group({
-      quantity: ['', [Validators.required]],
-      category: ['', [Validators.required]],
-      comment: [''],
-    });
-  }
-
-  createCraForm = this.fb.group({
-    startingDate: ['', [Validators.required]],
-    endingDate: ['', [Validators.required]],
-    forms: this.fb.array([this.createForm()]),
-  });
-
-  get forms(): FormArray {
-    return <FormArray>this.createCraForm.get('forms');
-  }
-
-  getFormsArr(index: number): FormGroup {
-    const formsArr = this.createCraForm.get('forms') as FormArray;
-    return formsArr.controls[index] as FormGroup;
-  }
-
-  hasError(controlName: string, errorName: string) {
-    return this.createCraForm.get(controlName)?.hasError(errorName);
-  }
-
-  onAddForm() {
-    this.forms.push(this.createForm());
-  }
-  onRemoveForm(index: number) {
-    this.forms.removeAt(index);
-  }
-
-  onSaveCra(): void {
-    this.submitted = true;
-
-    if (this.createCraForm.invalid) return;
-    console.log(JSON.stringify(this.createCraForm.value, null, 2));
-  }
+  // ********* FORM (handling) *********
   onSubmitCra(): void {
     this.submitted = true;
 
-    // if (this.createCraForm.invalid) return;
-    console.log(JSON.stringify(this.createCraForm.value, null, 2));
+    const savedCra = new LocalStorage().onGetItem('saved-cra');
+    if (!savedCra) return;
+    console.log(JSON.stringify(savedCra, null, 2));
 
-    this.craService.createCra(this.createCraForm.value).subscribe(
+    this.craService.createCra(savedCra).subscribe(
       (res) => {
         let dialogRef = this.dialog.open(
           SuccessDialogComponent,
@@ -173,9 +159,5 @@ export class CraComponent {
         this.errorService.handleError("L'erreur !", this.dialogConfig);
       }
     );
-  }
-  onCancel(): void {
-    this.submitted = false;
-    this.dialog.closeAll();
   }
 }
