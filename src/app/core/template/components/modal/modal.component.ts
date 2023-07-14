@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from 'date-fns';
-import { LocalStorage } from 'src/app/features/cra/cra.component';
+import { LocalStorageService } from 'src/app/core/service/storage-service';
 
 @Component({
   selector: 'app-modal',
@@ -13,7 +13,8 @@ export class ModalComponent {
   constructor(
     public dialogRef: MatDialogRef<ModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private storageService: LocalStorageService
   ) {}
 
   categories: string[] = [
@@ -50,7 +51,6 @@ export class ModalComponent {
 
   createForm() {
     return this.fb.group({
-      // date: ['', [Validators.required]],
       quantity: ['', [Validators.required]],
       category: ['', [Validators.required]],
       comment: [''],
@@ -87,16 +87,13 @@ export class ModalComponent {
   }
 
   onSaveCra(): void {
-    console.log(this.createCraForm.invalid);
     if (this.createCraForm.invalid) return;
 
     const activities = this.createCraForm.value.activities?.map((act) => {
       return { ...act, date: format(this.data.date, 'dd-MM-yyyy') };
     });
 
-    console.log(activities);
-
-    new LocalStorage().onSaveItem('save-cra', this.createCraForm.value);
+    this.storageService.onSaveItem('save-cra', { activities });
   }
   onCancel(): void {
     this.dialogRef.close();

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CalendarOptions, DateSelectArg } from '@fullcalendar/core';
 import frLocale from '@fullcalendar/core/locales/fr';
@@ -9,36 +8,9 @@ import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { ErrorHandlerService } from 'src/app/core/template/components/error-dialog/error-handler.service';
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
-import { SuccessDialogComponent } from 'src/app/core/template/components/success-dialog/success-dialog.component';
-import { CraService } from '../../core/service/cra-service';
 import { SucessHandlerService } from 'src/app/core/template/components/success-dialog/success-dialog.service';
-
-export class LocalStorage {
-  onSaveItem(key: string, item: any) {
-    try {
-      localStorage.setItem(key, JSON.stringify(item));
-    } catch (err) {
-      console.log('Err: ', err);
-    }
-  }
-  onGetItem(key: string) {
-    try {
-      const value = localStorage.getItem(key);
-      if (value != '' && value != null && typeof value != 'undefined') {
-        return JSON.parse(value!);
-      }
-    } catch (err) {
-      console.log('ERR: ', err);
-    }
-  }
-  onRemoveItem(key: string) {
-    try {
-      localStorage.removeItem(key);
-    } catch (err) {
-      console.log('Err: ', err);
-    }
-  }
-}
+import { CraService } from '../../core/service/cra-service';
+import { LocalStorageService } from 'src/app/core/service/storage-service';
 
 @Component({
   selector: 'app-cra',
@@ -60,20 +32,72 @@ export class CraComponent {
     'Noël',
   ];
   HOLIDAYS = [
-    { title: "Jour de l'An", date: '2023-01-01' },
-    { title: 'Lundi de Pâques', date: '2023-04-10' },
-    { title: 'Fête du travail', date: '2023-05-01' },
-    { title: 'Armistice 1945', date: '2023-05-08' },
-    { title: 'Ascension', date: '2023-05-18' },
-    { title: 'Lundi de Pentecôte', date: '2023-05-29' },
+    {
+      title: "Jour de l'An",
+      date: '2023-01-01',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Lundi de Pâques',
+      date: '2023-04-10',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Fête du travail',
+      date: '2023-05-01',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Armistice 1945',
+      date: '2023-05-08',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Ascension',
+      date: '2023-05-18',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Lundi de Pentecôte',
+      date: '2023-05-29',
+      display: 'background',
+      color: 'green',
+    },
     {
       title: 'Fête nationale',
       date: '2023-07-14',
+      display: 'background',
+      color: 'green',
     },
-    { title: 'Assomption', date: '2023-08-15' },
-    { title: 'Toussaint', date: '2023-11-01' },
-    { title: 'Armistice 1918', date: '2023-11-11' },
-    { title: 'Noël', date: '2023-12-25' },
+    {
+      title: 'Assomption',
+      date: '2023-08-15',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Toussaint',
+      date: '2023-11-01',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Armistice 1918',
+      date: '2023-11-11',
+      display: 'background',
+      color: 'green',
+    },
+    {
+      title: 'Noël',
+      date: '2023-12-25',
+      display: 'background',
+      color: 'green',
+    },
   ];
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
   title: string = "Création d'un rendu de compte";
@@ -85,23 +109,22 @@ export class CraComponent {
     disableClose: true,
     data: {},
   };
-  errorMessage: string = '';
   isFormValid: boolean = false;
+
+  events: any[] = [];
 
   constructor(
     public dialog: MatDialog,
     private craService: CraService,
     private errorService: ErrorHandlerService,
-    private successService: SucessHandlerService
+    private successService: SucessHandlerService,
+    private storageService: LocalStorageService
   ) {}
-
-  ngOnInit() {}
 
   calendarOptions: CalendarOptions = {
     locales: [frLocale],
     locale: 'fr',
     initialView: 'dayGridMonth',
-    // dateClick: this.handleDateClick.bind(this), // MUST ensure `this` context is maintained
     events: [],
     initialEvents: [...this.HOLIDAYS],
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
@@ -110,7 +133,6 @@ export class CraComponent {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
-    eventBackgroundColor: 'green',
     weekends: true,
     editable: true,
     selectable: true,
@@ -136,13 +158,15 @@ export class CraComponent {
     dialogRef.afterClosed().subscribe((result) => {
       // console.log('The dialog was closed: ', result);
       this.isFormValid = result;
+      // this.events.push({ title: 'TT', date: selectInfo.start });
+      // this.calendarOptions.events = this.events;
     });
   }
 
   // ********* FORM (handling) *********
   onSubmitCra(): void {
     if (this.isFormValid) return;
-    const savedCra = new LocalStorage().onGetItem('saved-cra');
+    const savedCra = this.storageService.onGetItem('saved-cra');
     // console.log(JSON.stringify(savedCra, null, 2));
 
     this.craService.createCra(savedCra).subscribe(
@@ -151,7 +175,7 @@ export class CraComponent {
           successMessage: "La soumission du CRA s'est déroulé avec succès ",
         };
         this.successService.handleSuccess(this.dialogConfig);
-        new LocalStorage().onRemoveItem('saved-cra');
+        this.storageService.onRemoveItem('saved-cra');
 
         // dialogRef.afterClosed().subscribe((result) => {});
       },

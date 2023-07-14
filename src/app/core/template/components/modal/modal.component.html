@@ -135,7 +135,14 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="dialog__footer">
-    <button type="submit" mat-raised-button color="primary">Enregistrer</button>
+    <button
+      type="submit"
+      mat-raised-button
+      color="primary"
+      [disabled]="createCraForm.invalid"
+    >
+      Enregistrer
+    </button>
     <button type="button" mat-button color="primary" (click)="onCancel()">
       Annuler
     </button>
