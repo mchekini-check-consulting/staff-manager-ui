@@ -11,6 +11,7 @@ import { ErrorHandlerService } from 'src/app/core/template/components/error-dial
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
 import { SuccessDialogComponent } from 'src/app/core/template/components/success-dialog/success-dialog.component';
 import { CraService } from '../../core/service/cra-service';
+import { SucessHandlerService } from 'src/app/core/template/components/success-dialog/success-dialog.service';
 
 export class LocalStorage {
   onSaveItem(key: string, item: any) {
@@ -42,6 +43,7 @@ export class LocalStorage {
 @Component({
   selector: 'app-cra',
   templateUrl: './cra.component.html',
+  styleUrls: ['./cra.component.scss'],
 })
 export class CraComponent {
   categories: string[] = [
@@ -74,22 +76,23 @@ export class CraComponent {
     { title: 'Noël', date: '2023-12-25' },
   ];
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
-  title: string = "Création d'un rebdu de compte";
+  title: string = "Création d'un rendu de compte";
   submitted = false;
 
   dialogConfig: any = {
-    height: '200px',
-    width: '400px',
+    height: '250px',
+    width: '350px',
     disableClose: true,
     data: {},
   };
   errorMessage: string = '';
+  isFormValid: boolean = false;
 
   constructor(
     public dialog: MatDialog,
-    private fb: FormBuilder,
     private craService: CraService,
-    private errorService: ErrorHandlerService // private storage: LocalStorage
+    private errorService: ErrorHandlerService,
+    private successService: SucessHandlerService
   ) {}
 
   ngOnInit() {}
@@ -116,16 +119,12 @@ export class CraComponent {
     select: this.handleSeclectedDay.bind(this),
   };
 
-  openModal(): void {
-    this.dialog.open(ModalComponent);
-  }
-
   toggleWeekends() {
     this.calendarOptions.weekends = !this.calendarOptions.weekends; // toggle the boolean!
   }
 
   handleSeclectedDay(selectInfo: DateSelectArg) {
-    this.dialog.open(ModalComponent, {
+    const dialogRef = this.dialog.open(ModalComponent, {
       height: '600px',
       width: '600px',
       disableClose: true,
@@ -133,28 +132,33 @@ export class CraComponent {
         date: selectInfo.start,
       },
     });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      // console.log('The dialog was closed: ', result);
+      this.isFormValid = result;
+    });
   }
 
   // ********* FORM (handling) *********
   onSubmitCra(): void {
-    this.submitted = true;
-
+    if (this.isFormValid) return;
     const savedCra = new LocalStorage().onGetItem('saved-cra');
-    if (!savedCra) return;
-    console.log(JSON.stringify(savedCra, null, 2));
+    // console.log(JSON.stringify(savedCra, null, 2));
 
     this.craService.createCra(savedCra).subscribe(
       (res) => {
-        let dialogRef = this.dialog.open(
-          SuccessDialogComponent,
-          this.dialogConfig
-        );
+        this.dialogConfig.data = {
+          successMessage: "La soumission du CRA s'est déroulé avec succès ",
+        };
+        this.successService.handleSuccess(this.dialogConfig);
+        new LocalStorage().onRemoveItem('saved-cra');
+
         // dialogRef.afterClosed().subscribe((result) => {});
       },
       (err) => {
         console.log('ERR: ', err);
         this.dialogConfig.data = { errorMessage: err.message };
-        this.errorService.handleError("L'erreur !", this.dialogConfig);
+        this.errorService.handleError(this.dialogConfig);
       }
     );
   }

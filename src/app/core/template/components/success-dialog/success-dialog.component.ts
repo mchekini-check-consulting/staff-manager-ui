@@ -6,10 +6,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   templateUrl: './success-dialog.component.html',
 })
 export class SuccessDialogComponent {
-  // title: string = "Création d'un compte rendu d'activité";
-  @Input('title')
-  title: string = '';
-
   constructor(
     public dialogRef: MatDialogRef<SuccessDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any

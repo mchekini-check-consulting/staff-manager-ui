@@ -1,19 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CraModel } from '../model/cra-model';
 
 interface ICra {
   id?: string;
-  startingDate: string;
-  endingDate: string;
-  extendHours?: number;
-  astreinte: boolean;
-  objects: {
-    category: string;
-    hours: number;
-    comment?: string;
-  }[];
+  date: string;
+  category: string;
+  quantity: number;
+  comment?: string;
 }
 
 @Injectable({
@@ -22,7 +16,7 @@ interface ICra {
 export class CraService {
   constructor(private http: HttpClient) {}
 
-  createCra(cra: any): Observable<CraModel> {
-    return this.http.post<any>('/api/v1/collaborator/cra', cra);
+  createCra(cra: ICra): Observable<ICra> {
+    return this.http.post<ICra>('/api/v1/activity', cra);
   }
 }

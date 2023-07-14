@@ -1,0 +1,25 @@
+.dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dialog__body {
+}
+.dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.form__cra {
+  display: flex;
+  flex-direction: column;
+}
+
+.form__cra__container {
+  overflow-y: scroll;
+}
+
+.form__cra textarea {
+  height: 5em;
+}

@@ -1,12 +1,13 @@
-import { Component, Inject, Input } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { LocalStorage } from 'src/app/features/cra/cra.component';
 
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
+  styleUrls: ['./modal.component.scss'],
 })
 export class ModalComponent {
   constructor(
@@ -45,11 +46,11 @@ export class ModalComponent {
     { title: 'Noël', date: '2023-12-25' },
   ];
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
-  dialogTitle: string = "Création d'un rebdu de compte";
+  dialogTitle: string = "Création d'un rendu d'activité";
 
   createForm() {
     return this.fb.group({
-      date: ['', [Validators.required]],
+      // date: ['', [Validators.required]],
       quantity: ['', [Validators.required]],
       category: ['', [Validators.required]],
       comment: [''],
@@ -86,6 +87,7 @@ export class ModalComponent {
   }
 
   onSaveCra(): void {
+    console.log(this.createCraForm.invalid);
     if (this.createCraForm.invalid) return;
 
     const activities = this.createCraForm.value.activities?.map((act) => {

@@ -1,14 +1,19 @@
-<h2 mat-dialog-title>{{ dialogTitle }}</h2>
 <form
   [formGroup]="createCraForm"
   (ngSubmit)="onSaveCra()"
   autocomplete="off"
   novalidate
 >
-  <mat-dialog-content>
-    <div fxLayout="column" fxLayoutAlign="center center">
-      <div fxFlex="100%">
-        <!-- <mat-form-field>
+  <div class="dialog__header">
+    <h2 mat-dialog-title>{{ dialogTitle }}</h2>
+    <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+      <mat-icon class="close-icon" color="primary">close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="form__cra__container">
+    <div fxFlex="100%">
+      <!-- <mat-form-field>
           <mat-label>Date de début</mat-label>
           <input
             matInput
@@ -47,92 +52,89 @@
             >Ce champs est obligatoire</mat-error
           >
         </mat-form-field> -->
-      </div>
+    </div>
 
-      <div formArrayName="activities" fxFlex="100%">
-        <div *ngFor="let f of activities.controls; let i = index">
-          <div [formGroupName]="i">
-            <div fxFlex="100%">
-              <mat-form-field appearance="outline">
-                <mat-label>Quantité {{ i + 1 }} </mat-label>
-                <mat-select name="hour" formControlName="quantity">
-                  <mat-option
-                    *ngFor="let quantity of quantities"
-                    [value]="quantity"
-                  >
-                    {{ quantity }}
-                  </mat-option>
-                </mat-select>
-
-                <mat-error
-                  *ngIf="
-                    getActivitiesArr(i).controls['quantity'].hasError(
-                      'required'
-                    ) && getActivitiesArr(i).controls['quantity'].touched
-                  "
-                  >Ce champs est obligatoire</mat-error
+    <div formArrayName="activities">
+      <div *ngFor="let f of activities.controls; let i = index">
+        <div [formGroupName]="i">
+          <div class="form__cra">
+            <mat-form-field appearance="outline">
+              <mat-label>Quantité {{ i + 1 }} </mat-label>
+              <mat-select name="hour" formControlName="quantity">
+                <mat-option
+                  *ngFor="let quantity of quantities"
+                  [value]="quantity"
                 >
-              </mat-form-field>
+                  {{ quantity }}
+                </mat-option>
+              </mat-select>
 
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Catégorie {{ i + 1 }} </mat-label>
-                <mat-select name="category" formControlName="category">
-                  <mat-option
-                    *ngFor="let category of categories"
-                    [value]="category"
-                  >
-                    {{ category }}
-                  </mat-option>
-                </mat-select>
+              <mat-error
+                *ngIf="
+                  getActivitiesArr(i).controls['quantity'].hasError(
+                    'required'
+                  ) && getActivitiesArr(i).controls['quantity'].touched
+                "
+                >Ce champs est obligatoire</mat-error
+              >
+            </mat-form-field>
 
-                <mat-error
-                  *ngIf="
-                    getActivitiesArr(i).controls['category'].hasError(
-                      'required'
-                    ) && getActivitiesArr(i).controls['category'].touched
-                  "
-                  >Ce champs est obligatoire</mat-error
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Catégorie {{ i + 1 }} </mat-label>
+              <mat-select name="category" formControlName="category">
+                <mat-option
+                  *ngFor="let category of categories"
+                  [value]="category"
                 >
-              </mat-form-field>
-            </div>
+                  {{ category }}
+                </mat-option>
+              </mat-select>
 
-            <div fxFlex="100%">
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Commentaire {{ i + 1 }} </mat-label>
-                <textarea
-                  matInput
-                  ormControlName="comment"
-                  name="comment"
-                  id="{{ 'comment' + i }}"
-                ></textarea>
-              </mat-form-field>
-            </div>
+              <mat-error
+                *ngIf="
+                  getActivitiesArr(i).controls['category'].hasError(
+                    'required'
+                  ) && getActivitiesArr(i).controls['category'].touched
+                "
+                >Ce champs est obligatoire</mat-error
+              >
+            </mat-form-field>
 
-            <button
-              type="button"
-              mat-mini-fab
-              color="primary"
-              (click)="onRemoveActivity(i)"
-              *ngIf="i >= 1"
-            >
-              <mat-icon aria-hidden="false" fontIcon="remove">-</mat-icon>
-            </button>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Commentaire {{ i + 1 }} </mat-label>
+              <textarea
+                matInput
+                ormControlName="comment"
+                name="comment"
+                id="{{ 'comment' + i }}"
+              ></textarea>
+            </mat-form-field>
           </div>
+
+          <button
+            type="button"
+            mat-mini-fab
+            color="primary"
+            (click)="onRemoveActivity(i)"
+            *ngIf="i >= 1"
+          >
+            <mat-icon aria-hidden="false" fontIcon="remove">-</mat-icon>
+          </button>
         </div>
-        <button
-          type="button"
-          mat-mini-fab
-          color="primary"
-          (click)="onAddActivity()"
-          [disabled]="activitiesLength() >= 2"
-        >
-          <mat-icon aria-hidden="false" fontIcon="add-circle"></mat-icon>
-        </button>
       </div>
+      <button
+        type="button"
+        mat-mini-fab
+        color="primary"
+        (click)="onAddActivity()"
+        [disabled]="activitiesLength() >= 2"
+      >
+        <mat-icon aria-hidden="false" fontIcon="add-circle"></mat-icon>
+      </button>
     </div>
   </mat-dialog-content>
 
-  <mat-dialog-actions layout="row" layout-align="end end">
+  <mat-dialog-actions class="dialog__footer">
     <button type="submit" mat-raised-button color="primary">Enregistrer</button>
     <button type="button" mat-button color="primary" (click)="onCancel()">
       Annuler

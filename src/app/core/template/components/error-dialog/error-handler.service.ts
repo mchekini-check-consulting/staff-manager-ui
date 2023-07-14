@@ -9,7 +9,7 @@ import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 export class ErrorHandlerService {
   constructor(private dialog: MatDialog) {}
 
-  handleError(dialogConfig: any, error?: any) {
+  handleError(dialogConfig: any) {
     this.dialog.open(ErrorDialogComponent, dialogConfig);
   }
 }

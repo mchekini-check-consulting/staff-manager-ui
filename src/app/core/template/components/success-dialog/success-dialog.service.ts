@@ -9,7 +9,7 @@ import { SuccessDialogComponent } from '../success-dialog/success-dialog.compone
 export class SucessHandlerService {
   constructor(private dialog: MatDialog) {}
 
-  handleSuccess(dialogConfig: any, message?: any) {
+  handleSuccess(dialogConfig: any) {
     this.dialog.open(SuccessDialogComponent, dialogConfig);
   }
 }
