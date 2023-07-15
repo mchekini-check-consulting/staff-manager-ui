@@ -12,46 +12,46 @@
   </div>
 
   <mat-dialog-content class="form__cra__container">
-    <div fxFlex="100%">
-      <!-- <mat-form-field>
-          <mat-label>Date de début</mat-label>
-          <input
-            matInput
-            [matDatepicker]="startingDate"
-            placeholder="Date de début"
-            formControlName="startingDate"
-            id="startingDate"
-            (click)="startingDate.open()"
-          />
-          <mat-datepicker-toggle
-            matSuffix
-            [for]="startingDate"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #startingDate></mat-datepicker>
-          <mat-error *ngIf="hasError('startingDate', 'required')"
-            >Ce champs est obligatoire</mat-error
-          >
-        </mat-form-field>
+    <div class="form__cra">
+      <mat-form-field>
+        <mat-label>Date de début</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startDate"
+          placeholder="Date de début"
+          formControlName="startDate"
+          id="startDate"
+          (click)="startDate.open()"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startDate></mat-datepicker>
+        <mat-error *ngIf="hasError('startDate', 'required')"
+          >Ce champs est obligatoire</mat-error
+        >
+      </mat-form-field>
 
-        <mat-form-field>
-          <mat-label>Date de fin</mat-label>
-          <input
-            matInput
-            [matDatepicker]="endingDate"
-            placeholder="Date de fin"
-            formControlName="endingDate"
-            id="endingDate"
-            (click)="endingDate.open()"
-          />
-          <mat-datepicker-toggle
-            matSuffix
-            [for]="endingDate"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #endingDate></mat-datepicker>
-          <mat-error *ngIf="hasError('endingDate', 'required')"
-            >Ce champs est obligatoire</mat-error
-          >
-        </mat-form-field> -->
+      <mat-form-field>
+        <mat-label>Date de fin</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endDate"
+          placeholder="Date de fin"
+          formControlName="endDate"
+          id="endDate"
+          (click)="endDate.open()"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endDate></mat-datepicker>
+        <mat-error *ngIf="hasError('endDate', 'required')"
+          >Ce champs est obligatoire</mat-error
+        >
+      </mat-form-field>
     </div>
 
     <div formArrayName="activities">
@@ -60,7 +60,7 @@
           <div class="form__cra">
             <mat-form-field appearance="outline">
               <mat-label>Quantité {{ i + 1 }} </mat-label>
-              <mat-select name="hour" formControlName="quantity">
+              <mat-select name="quantity" formControlName="quantity">
                 <mat-option
                   *ngFor="let quantity of quantities"
                   [value]="quantity"
@@ -79,14 +79,14 @@
               >
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="outline">
               <mat-label>Catégorie {{ i + 1 }} </mat-label>
               <mat-select name="category" formControlName="category">
                 <mat-option
                   *ngFor="let category of categories"
-                  [value]="category"
+                  [value]="category.value"
                 >
-                  {{ category }}
+                  {{ category.label }}
                 </mat-option>
               </mat-select>
 
@@ -100,7 +100,7 @@
               >
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="outline">
               <mat-label>Commentaire {{ i + 1 }} </mat-label>
               <textarea
                 matInput
@@ -127,7 +127,7 @@
         mat-mini-fab
         color="primary"
         (click)="onAddActivity()"
-        [disabled]="activitiesLength() >= 2"
+        [disabled]="activitiesLength() >= 4"
       >
         <mat-icon aria-hidden="false" fontIcon="add-circle"></mat-icon>
       </button>

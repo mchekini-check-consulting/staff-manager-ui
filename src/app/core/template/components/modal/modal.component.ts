@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from 'date-fns';
-import { LocalStorageService } from 'src/app/core/service/storage-service';
 
 @Component({
   selector: 'app-modal',
@@ -13,39 +12,23 @@ export class ModalComponent {
   constructor(
     public dialogRef: MatDialogRef<ModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder,
-    private storageService: LocalStorageService
+    private fb: FormBuilder
   ) {}
 
-  categories: string[] = [
-    "Jour de l'An",
-    'Lundi de Pâques',
-    'Fête du travail',
-    'Armistice 1945',
-    'Ascension',
-    'Lundi de Pentecôte',
-    'Fête nationale',
-    'Assomption',
-    'Toussaint',
-    'Armistice 1918',
-    'Noël',
+  categories: any[] = [
+    { value: 'JOUR_TRAVAILLE', label: 'JOUR TRAVAILLE' },
+    { value: 'CONGE_PAYE', label: 'CONGE PAYE' },
+    { value: 'CONGE_SANS_SOLDE', label: 'CONGE SANS SOLDE' },
+    { value: 'CONGE_MATERNITE', label: 'CONGE MATERNITE' },
+    { value: 'CONGE_PATERNITE', label: 'CONGE PATERNITE' },
+    { value: 'ARRET_MALADIE', label: 'ARRET MALADIE' },
+    { value: 'RTT', label: 'RTT' },
+    { value: 'INTERCONTRAT', label: 'INTERCONTRAT' },
+    { value: 'ASTREINTE', label: 'ASTREINTE' },
+    { value: 'HEURE_SUPPLEMENTAIRE', label: 'HEURE SUPPLEMENTAIRE' },
+    { value: 'RACHAT_RTT', label: 'RACHAT RTT' },
   ];
-  HOLIDAYS = [
-    { title: "Jour de l'An", date: '2023-01-01' },
-    { title: 'Lundi de Pâques', date: '2023-04-10' },
-    { title: 'Fête du travail', date: '2023-05-01' },
-    { title: 'Armistice 1945', date: '2023-05-08' },
-    { title: 'Ascension', date: '2023-05-18' },
-    { title: 'Lundi de Pentecôte', date: '2023-05-29' },
-    {
-      title: 'Fête nationale',
-      date: '2023-07-14',
-    },
-    { title: 'Assomption', date: '2023-08-15' },
-    { title: 'Toussaint', date: '2023-11-01' },
-    { title: 'Armistice 1918', date: '2023-11-11' },
-    { title: 'Noël', date: '2023-12-25' },
-  ];
+
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
   dialogTitle: string = "Création d'un rendu d'activité";
 
@@ -58,6 +41,8 @@ export class ModalComponent {
   }
 
   createCraForm = this.fb.group({
+    startDate: ['', [Validators.required]],
+    endDate: ['', [Validators.required]],
     activities: this.fb.array([this.createForm()]),
   });
 
@@ -75,7 +60,7 @@ export class ModalComponent {
   }
 
   onAddActivity() {
-    if (this.createCraForm.controls.activities.length >= 2) return;
+    if (this.createCraForm.controls.activities.length >= 4) return;
     this.activities.push(this.createForm());
   }
   onRemoveActivity(index: number) {
@@ -89,11 +74,25 @@ export class ModalComponent {
   onSaveCra(): void {
     if (this.createCraForm.invalid) return;
 
-    const activities = this.createCraForm.value.activities?.map((act) => {
-      return { ...act, date: format(this.data.date, 'dd-MM-yyyy') };
-    });
+    const craObj = {
+      startDate: format(
+        new Date(this.createCraForm.value.startDate as string),
+        'yyyy-MM-dd'
+      ),
+      endDate: format(
+        new Date(this.createCraForm.value.endDate as string),
+        'yyyy-MM-dd'
+      ),
+      activities: this.createCraForm.value.activities,
+    };
 
-    this.storageService.onSaveItem('save-cra', { activities });
+    // this.storageService.onSaveItem('save-cra', { activities });
+    this.dialogRef.close(
+      (this.data = {
+        craObj,
+        isFormValid: !this.createCraForm.invalid,
+      })
+    );
   }
   onCancel(): void {
     this.dialogRef.close();
