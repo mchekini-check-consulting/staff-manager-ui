@@ -197,6 +197,7 @@ export class CraComponent implements OnInit {
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleSeclectedDay.bind(this),
+    height : '700px',
   };
 
   toggleWeekends() {
