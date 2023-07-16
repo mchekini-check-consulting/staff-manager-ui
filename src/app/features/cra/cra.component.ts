@@ -6,12 +6,11 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { format, isWeekend } from 'date-fns';
 import { ErrorHandlerService } from 'src/app/core/template/components/error-dialog/error-handler.service';
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
 import { SucessHandlerService } from 'src/app/core/template/components/success-dialog/success-dialog.service';
 import { CraService } from '../../core/service/cra-service';
-import { LocalStorageService } from 'src/app/core/service/storage-service';
-import { format, isWeekend } from 'date-fns';
 
 @Component({
   selector: 'app-cra',
@@ -68,7 +67,7 @@ export class CraComponent implements OnInit {
       date: this.currentYear + '-07-14',
       display: 'background',
       color: 'gray',
-      textColor: 'black',
+      textColor: 'white',
     },
     {
       title: 'Assomption',
@@ -176,8 +175,8 @@ export class CraComponent implements OnInit {
       });
     };
 
-    // this.events.push(...createEvents(weekEnds()));
-    // this.calendarOptions.events = this.events;
+    this.events.push(...createEvents(weekEnds()));
+    this.calendarOptions.events = this.events;
   }
 
   calendarOptions: CalendarOptions = {
@@ -221,25 +220,29 @@ export class CraComponent implements OnInit {
         .join('-');
 
       if (result.craObj.startDate !== result.craObj.endDate) {
-        this.events.push({
-          title: craTitle,
-          start: result.craObj.startDate,
-          end: result.craObj.endDate,
-          display: 'background',
-          color: 'blue',
-          textColor: 'black',
-        });
+        this.calendarOptions.events = [
+          ...this.events,
+          {
+            title: craTitle,
+            start: result.craObj.startDate,
+            end: this.adjustEndDate(result.craObj.endDate),
+            // display: 'background',
+            color: 'blue',
+            textColor: 'white',
+          },
+        ];
       } else {
-        this.events.push({
-          title: craTitle,
-          date: result.craObj.startDate,
-          display: 'background',
-          color: 'blue',
-          textColor: 'black',
-        });
+        this.calendarOptions.events = [
+          ...this.events,
+          {
+            title: craTitle,
+            date: result.craObj.startDate,
+            // display: 'background',
+            color: 'blue',
+            textColor: 'white',
+          },
+        ];
       }
-
-      this.calendarOptions.events = this.events;
     });
   }
 
@@ -277,5 +280,11 @@ export class CraComponent implements OnInit {
           this.errorService.handleError(this.dialogConfig);
         }
       );
+  }
+
+  adjustEndDate(date: string) {
+    const currentDate = new Date(date);
+    currentDate.setDate(currentDate.getDate() + 1);
+    return format(currentDate, 'yyyy-MM-dd');
   }
 }

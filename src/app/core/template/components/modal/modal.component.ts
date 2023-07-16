@@ -1,5 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from 'date-fns';
 
@@ -8,12 +9,17 @@ import { format } from 'date-fns';
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
 })
-export class ModalComponent {
+export class ModalComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dateAdapter: DateAdapter<any>
   ) {}
+
+  ngOnInit() {
+    this.dateAdapter.setLocale('fr-FR');
+  }
 
   categories: any[] = [
     { value: 'JOUR_TRAVAILLE', label: 'JOUR TRAVAILLE' },
