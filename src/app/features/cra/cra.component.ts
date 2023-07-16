@@ -11,6 +11,7 @@ import { ErrorHandlerService } from 'src/app/core/template/components/error-dial
 import { ModalComponent } from 'src/app/core/template/components/modal/modal.component';
 import { SucessHandlerService } from 'src/app/core/template/components/success-dialog/success-dialog.service';
 import { CraService } from '../../core/service/cra-service';
+import { CraModel } from 'src/app/core/model/cra-model';
 
 @Component({
   selector: 'app-cra',
@@ -111,10 +112,8 @@ export class CraComponent implements OnInit {
     this.currentYear + '-11-11',
     this.currentYear + '-12-25',
   ];
-
   title: string = "Création d'un rendu de compte";
   submitted = false;
-
   dialogConfig: any = {
     height: '250px',
     width: '350px',
@@ -122,9 +121,7 @@ export class CraComponent implements OnInit {
     data: {},
   };
   isFormValid: boolean = false;
-
   events: any[] = [];
-
   craObj: any;
 
   constructor(
@@ -151,17 +148,6 @@ export class CraComponent implements OnInit {
         .map((m) => m.filter((d: any) => isWeekend(d)))
         .flat(2);
     };
-    // const workDays = () => {
-    //   return daysYear()
-    //     .map((m) =>
-    //       m.filter(
-    //         (d: any) =>
-    //           !isWeekend(d) &&
-    //           !this.HOLIDAYS_DATES.includes(format(d, 'yyyy-MM-dd'))
-    //       )
-    //     )
-    //     .flat(2);
-    // };
 
     const createEvents = (arr: any, isWorkDays?: boolean) => {
       return arr.map((d: any) => {
@@ -197,7 +183,6 @@ export class CraComponent implements OnInit {
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleSeclectedDay.bind(this),
-    height : '700px',
   };
 
   toggleWeekends() {
@@ -212,37 +197,34 @@ export class CraComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed: ', result);
+      // console.log('The dialog was closed: ', result);
 
       this.isFormValid = result.isFormValid;
+      this.craObj = result.craObj;
 
       const craTitle = result.craObj.activities
-        .map((act: any) => act.category)
-        .join('-');
+        .map((act: any) => act.category.split('_').join(' '))
+        .join(' / ');
 
       if (result.craObj.startDate !== result.craObj.endDate) {
-        this.calendarOptions.events = [
-          ...this.events,
-          {
-            title: craTitle,
-            start: result.craObj.startDate,
-            end: this.adjustEndDate(result.craObj.endDate),
-            // display: 'background',
-            color: 'blue',
-            textColor: 'white',
-          },
-        ];
+        const newCra = {
+          title: craTitle,
+          start: result.craObj.startDate,
+          end: this.adjustEndDate(result.craObj.endDate),
+          color: 'blue',
+          textColor: 'white',
+        };
+        this.calendarOptions.events = [...this.events, newCra];
+        this.events.push(newCra);
       } else {
-        this.calendarOptions.events = [
-          ...this.events,
-          {
-            title: craTitle,
-            date: result.craObj.startDate,
-            // display: 'background',
-            color: 'blue',
-            textColor: 'white',
-          },
-        ];
+        const newCra = {
+          title: craTitle,
+          date: result.craObj.startDate,
+          color: 'blue',
+          textColor: 'white',
+        };
+        this.calendarOptions.events = [...this.events, newCra];
+        this.events.push(newCra);
       }
     });
   }
@@ -250,37 +232,51 @@ export class CraComponent implements OnInit {
   // ********* FORM (handling) *********
   onSubmitCra(): void {
     if (!this.isFormValid) return;
-    // const savedCra = this.storageService.onGetItem('saved-cra');
-    // console.log(JSON.stringify(savedCra, null, 2));
 
-    this.craService
-      .createCra({
-        startDate: '2023-07-10',
-        endDate: '2023-07-13',
-        activities: [
-          {
-            quantity: 4,
-            category: 'CONGE_MATERNITE',
-            comment: '',
-          },
-        ],
-      })
-      .subscribe(
-        (res) => {
-          this.dialogConfig.data = {
-            successMessage: "La soumission du CRA s'est déroulé avec succès ",
-          };
-          this.successService.handleSuccess(this.dialogConfig);
-          // this.storageService.onRemoveItem('saved-cra');
+    const craToSubmit = {
+      activities: this.craObj.activities.map((act: any, idx: number) => {
+        return {
+          date:
+            idx === 0
+              ? this.craObj.startDate
+              : this.adjustEndDate(this.craObj.startDate),
+          quantity: act.quantity,
+          category: act.category,
+          comment: act.comment,
+        };
+      }),
+    };
 
-          // dialogRef.afterClosed().subscribe((result) => {});
-        },
-        (err) => {
-          console.log('ERR: ', err);
-          this.dialogConfig.data = { errorMessage: err.message };
-          this.errorService.handleError(this.dialogConfig);
-        }
-      );
+    console.log(craToSubmit);
+
+    this.craService.createCra(craToSubmit).subscribe(
+      (res) => {
+        this.dialogConfig.data = {
+          successMessage: "La soumission du CRA s'est déroulé avec succès",
+        };
+        this.successService.handleSuccess(this.dialogConfig);
+      },
+      (err) => {
+        console.log('ERR: ', err);
+        this.dialogConfig.data = { errorMessage: err.message };
+        this.errorService.handleError(this.dialogConfig);
+      }
+    );
+
+    //  this.craService.createCra(this.craObj).subscribe(
+    //    (res) => {
+    //      this.dialogConfig.data = {
+    //        successMessage: "La soumission du CRA s'est déroulé avec succès ",
+    //      };
+    //      this.successService.handleSuccess(this.dialogConfig);
+
+    //    },
+    //    (err) => {
+    //      console.log('ERR: ', err);
+    //      this.dialogConfig.data = { errorMessage: err.message };
+    //      this.errorService.handleError(this.dialogConfig);
+    //    }
+    //  );
   }
 
   adjustEndDate(date: string) {

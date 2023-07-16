@@ -40,8 +40,10 @@ export class ModalComponent implements OnInit {
 
   createForm() {
     return this.fb.group({
-      quantity: ['', [Validators.required]],
-      category: ['', [Validators.required]],
+      // quantity: ['', [Validators.required]],
+      // category: ['', [Validators.required]],
+      quantity: [''],
+      category: [''],
       comment: [''],
     });
   }
