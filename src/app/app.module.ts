@@ -22,7 +22,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { ErrorDialogComponent } from './core/template/components/error-dialog/error-dialog.component';
 import { FooterComponent } from './core/template/components/footer/footer.component';
-import { ModalComponent } from './core/template/components/modal/modal.component';
 import { NavbarComponent } from './core/template/components/navbar/navbar.component';
 import { SidebarComponent } from './core/template/components/sidebar/sidebar.component';
 import { SuccessDialogComponent } from './core/template/components/success-dialog/success-dialog.component';
@@ -35,6 +34,7 @@ import { JustificatifsComponent } from './features/justificatifs/justificatifs.c
 import { ProfileInformationComponent } from './features/profile-information/profile-information.component';
 
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { CreateCraModalComponent } from './core/template/components/create-cra-modal/create-cra-modal.component';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -65,9 +65,9 @@ const COMPONENTS = [
   ErrorDialogComponent,
   SuccessDialogComponent,
   FooterComponent,
-  ModalComponent,
   NavbarComponent,
   SidebarComponent,
+  CreateCraModalComponent,
 ];
 const PAGES = [
   TemplateComponent,

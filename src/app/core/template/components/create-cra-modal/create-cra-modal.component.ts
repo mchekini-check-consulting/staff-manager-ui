@@ -4,14 +4,53 @@ import { DateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from 'date-fns';
 
+enum CategoryValue {
+  JOUR_TRAVAILLE = 'JOUR_TRAVAILLE',
+  CONGE_PAYE = 'CONGE_PAYE',
+  CONGE_SANS_SOLDE = 'CONGE_SANS_SOLDE',
+  CONGE_MATERNITE = 'CONGE_MATERNITE',
+  CONGE_PATERNITE = 'CONGE_PATERNITE',
+  ARRET_MALADIE = 'ARRET_MALADIE',
+  RTT = 'RTT',
+  INTERCONTRAT = 'INTERCONTRAT',
+  ASTREINTE = 'ASTREINTE',
+  HEURE_SUPPLEMENTAIRE = 'HEURE_SUPPLEMENTAIRE',
+  RACHAT_RTT = 'RACHAT_RTT',
+}
+
+interface ICategory {
+  value: CategoryValue; // Use the enum type for the 'value' property
+  label: string;
+}
+
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.scss'],
+  selector: 'app-create-cra-modal',
+  templateUrl: './create-cra-modal.component.html',
+  styleUrls: ['./create-cra-modal.component.scss'],
 })
-export class ModalComponent implements OnInit {
+export class CreateCraModalComponent implements OnInit {
+  categories: ICategory[] = [
+    { value: CategoryValue.JOUR_TRAVAILLE, label: 'JOUR TRAVAILLE' },
+    { value: CategoryValue.CONGE_PAYE, label: 'CONGE PAYE' },
+    { value: CategoryValue.CONGE_SANS_SOLDE, label: 'CONGE SANS SOLDE' },
+    { value: CategoryValue.CONGE_MATERNITE, label: 'CONGE MATERNITE' },
+    { value: CategoryValue.CONGE_PATERNITE, label: 'CONGE PATERNITE' },
+    { value: CategoryValue.ARRET_MALADIE, label: 'ARRET MALADIE' },
+    { value: CategoryValue.RTT, label: 'RTT' },
+    { value: CategoryValue.INTERCONTRAT, label: 'INTERCONTRAT' },
+    { value: CategoryValue.ASTREINTE, label: 'ASTREINTE' },
+    {
+      value: CategoryValue.HEURE_SUPPLEMENTAIRE,
+      label: 'HEURE SUPPLEMENTAIRE',
+    },
+    { value: CategoryValue.RACHAT_RTT, label: 'RACHAT RTT' },
+  ];
+
+  quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+  dialogTitle: string = "Création d'un compte rendu d'activité";
+
   constructor(
-    public dialogRef: MatDialogRef<ModalComponent>,
+    public dialogRef: MatDialogRef<CreateCraModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder,
     private dateAdapter: DateAdapter<any>
@@ -21,27 +60,8 @@ export class ModalComponent implements OnInit {
     this.dateAdapter.setLocale('fr-FR');
   }
 
-  categories: any[] = [
-    { value: 'JOUR_TRAVAILLE', label: 'JOUR TRAVAILLE' },
-    { value: 'CONGE_PAYE', label: 'CONGE PAYE' },
-    { value: 'CONGE_SANS_SOLDE', label: 'CONGE SANS SOLDE' },
-    { value: 'CONGE_MATERNITE', label: 'CONGE MATERNITE' },
-    { value: 'CONGE_PATERNITE', label: 'CONGE PATERNITE' },
-    { value: 'ARRET_MALADIE', label: 'ARRET MALADIE' },
-    { value: 'RTT', label: 'RTT' },
-    { value: 'INTERCONTRAT', label: 'INTERCONTRAT' },
-    { value: 'ASTREINTE', label: 'ASTREINTE' },
-    { value: 'HEURE_SUPPLEMENTAIRE', label: 'HEURE SUPPLEMENTAIRE' },
-    { value: 'RACHAT_RTT', label: 'RACHAT RTT' },
-  ];
-
-  quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
-  dialogTitle: string = "Création d'un rendu d'activité";
-
   createForm() {
     return this.fb.group({
-      // quantity: ['', [Validators.required]],
-      // category: ['', [Validators.required]],
       quantity: [''],
       category: [''],
       comment: [''],
@@ -49,8 +69,8 @@ export class ModalComponent implements OnInit {
   }
 
   createCraForm = this.fb.group({
-    startDate: ['', [Validators.required]],
-    endDate: ['', [Validators.required]],
+    startDate: [this.data.date],
+    endDate: [''],
     activities: this.fb.array([this.createForm()]),
   });
 
@@ -94,7 +114,6 @@ export class ModalComponent implements OnInit {
       activities: this.createCraForm.value.activities,
     };
 
-    // this.storageService.onSaveItem('save-cra', { activities });
     this.dialogRef.close(
       (this.data = {
         craObj,
@@ -102,6 +121,7 @@ export class ModalComponent implements OnInit {
       })
     );
   }
+
   onCancel(): void {
     this.dialogRef.close();
   }

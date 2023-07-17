@@ -3,8 +3,6 @@
   justify-content: space-between;
   align-items: center;
 }
-.dialog__body {
-}
 .dialog__footer {
   display: flex;
   justify-content: flex-end;
@@ -16,10 +14,12 @@
   flex-direction: column;
 }
 
-.form__cra__container {
-  overflow-y: scroll;
-}
-
 .form__cra textarea {
   height: 5em;
+}
+
+::ng-deep {
+  .form__cra__container {
+    min-height: 28em;
+  }
 }
