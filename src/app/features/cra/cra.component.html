@@ -1,1 +1,17 @@
-<h1>En cours de Dev</h1>
+<div>
+  <h1 style="text-align: center">Compte Rendu D'activité</h1>
+
+  <!-- <button (click)="toggleWeekends()">toggle weekends</button> -->
+  <full-calendar class="calendar" [options]="calendarOptions"></full-calendar>
+
+  <button
+    type="submit"
+    mat-raised-button
+    color="primary"
+    (click)="onSubmitCra()"
+    [disabled]="!isFormValid"
+    class="submit__cra__btn"
+  >
+    Soumettre mon CRA pour validation
+  </button>
+</div>
