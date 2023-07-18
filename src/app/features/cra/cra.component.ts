@@ -48,6 +48,7 @@ export class CraComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('1: ');
     this.holidaysService.getPublicHolidays().subscribe((res) => {
       this.HOLIDAYS = res.map((d) => {
         return {
@@ -57,15 +58,16 @@ export class CraComponent implements OnInit {
           color: 'gray',
         };
       });
+      // console.log('holidays: ', this.HOLIDAYS);
+
+      const weekEnds = this.holidaysService.getWeekEnds();
+      const addEvents = [...this.HOLIDAYS, ...weekEnds];
+
+      console.log('addEvents: ', addEvents);
+      // set all events
+      this.events = addEvents;
+      this.calendarOptions.events = addEvents;
     });
-
-    const weekEnds = this.holidaysService.getWeekEnds();
-
-    const addEvents = [...this.HOLIDAYS, ...weekEnds];
-
-    // set all events
-    this.events = addEvents;
-    this.calendarOptions.events = addEvents;
   }
 
   calendarOptions: CalendarOptions = {
@@ -106,8 +108,6 @@ export class CraComponent implements OnInit {
       const craTitle = result.craObj.activities
         .map((act: any) => act.category.split('_').join(' '))
         .join(' / ');
-
-      // console.log(craTitle);
 
       if (result.craObj.startDate !== result.craObj.endDate) {
         newCra = {
