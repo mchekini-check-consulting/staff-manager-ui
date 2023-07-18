@@ -86,7 +86,7 @@ export class CraComponent implements OnInit {
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleSeclectedDay.bind(this),
-    height: '500px',
+    height: '650px',
   };
 
   handleSeclectedDay(selectInfo: DateSelectArg) {
