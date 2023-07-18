@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppDetailsModel } from '../model/app.details.model';
+import { CraModel } from '../model/cra-model';
+
+const BASE_URL = '/api/v1';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AppDetailsService {
+export class CraService {
   constructor(private http: HttpClient) {}
 
-  getAppDetails(): Observable<AppDetailsModel> {
-    return this.http.get<AppDetailsModel>('/api/v1/app/details');
+  createCra(cra: CraModel): Observable<CraModel> {
+    return this.http.post<CraModel>(BASE_URL + '/activity', cra);
   }
 }
