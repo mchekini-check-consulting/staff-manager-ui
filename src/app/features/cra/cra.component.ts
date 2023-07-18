@@ -1,23 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  CalendarOptions,
-  DateSelectArg,
-  EventInput,
-  EventSourceInput,
-} from '@fullcalendar/core';
+import { CalendarOptions, DateSelectArg } from '@fullcalendar/core';
 import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { format, isWeekend } from 'date-fns';
-import { ErrorHandlerService } from 'src/app/core/template/components/error-dialog/error-handler.service';
+import { format } from 'date-fns';
+import { HolidayService } from 'src/app/core/service/holiday-service';
 import { CreateCraModalComponent } from 'src/app/core/template/components/create-cra-modal/create-cra-modal.component';
+import { ErrorHandlerService } from 'src/app/core/template/components/error-dialog/error-handler.service';
 import { SucessHandlerService } from 'src/app/core/template/components/success-dialog/success-dialog.service';
 import { CraService } from '../../core/service/cra-service';
-import { CraModel } from 'src/app/core/model/cra-model';
-import { HolidayService } from 'src/app/core/service/holiday-service';
+import { IActivity } from 'src/app/core/model/cra-model';
 
 type CustomHoliday = {
   title: string;
@@ -89,6 +84,7 @@ export class CraComponent implements OnInit {
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleSeclectedDay.bind(this),
+    height: '500px',
   };
 
   handleSeclectedDay(selectInfo: DateSelectArg) {
@@ -110,6 +106,8 @@ export class CraComponent implements OnInit {
       const craTitle = result.craObj.activities
         .map((act: any) => act.category.split('_').join(' '))
         .join(' / ');
+
+      // console.log(craTitle);
 
       if (result.craObj.startDate !== result.craObj.endDate) {
         newCra = {
@@ -137,21 +135,24 @@ export class CraComponent implements OnInit {
   onSubmitCra(): void {
     if (!this.isFormValid) return;
 
-    const craToSubmit = {
-      activities: this.craObj?.activities.map((act: any, idx: number) => {
-        return {
-          date:
-            idx === 0
-              ? this.craObj.startDate
-              : this.adjustEndDate(this.craObj.startDate),
-          quantity: act.quantity,
-          category: act.category,
-          comment: act.comment,
-        };
-      }),
-    };
+    const dates = this.getDatesArray(
+      this.craObj.startDate,
+      this.craObj.endDate
+    );
 
-    this.craService.createCra(craToSubmit).subscribe(
+    let activities: IActivity[] = [];
+    for (let j = 0; j < dates.length; j++) {
+      for (let i = 0; i < this.craObj.activities.length; i++) {
+        activities.push({
+          date: format(dates[j], 'yyyy-MM-dd'),
+          quantity: this.craObj.activities[i].quantity,
+          category: this.craObj.activities[i].category,
+          comment: this.craObj.activities[i].comment,
+        });
+      }
+    }
+
+    this.craService.createCra({ activities }).subscribe(
       (res) => {
         this.dialogConfig.data = {
           successMessage: "La soumission du CRA s'est déroulé avec succès",
@@ -170,5 +171,17 @@ export class CraComponent implements OnInit {
     const currentDate = new Date(date);
     currentDate.setDate(currentDate.getDate() + 1);
     return format(currentDate, 'yyyy-MM-dd');
+  }
+
+  getDatesArray(startDate: Date, endDate: Date): Date[] {
+    const datesArray: Date[] = [];
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      datesArray.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return datesArray;
   }
 }

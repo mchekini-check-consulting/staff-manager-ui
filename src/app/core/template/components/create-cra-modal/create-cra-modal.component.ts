@@ -62,15 +62,17 @@ export class CreateCraModalComponent implements OnInit {
 
   createForm() {
     return this.fb.group({
-      quantity: [''],
-      category: [''],
+      quantity: ['', [Validators.required]],
+      category: ['', [Validators.required]],
       comment: [''],
     });
   }
 
   createCraForm = this.fb.group({
-    startDate: [this.data.date],
-    endDate: [''],
+    // startDate: [new Date(), [Validators.required]],
+    // endDate: [new Date(), [Validators.required]],
+    startDate: ['', [Validators.required]],
+    endDate: ['', [Validators.required]],
     activities: this.fb.array([this.createForm()]),
   });
 
@@ -102,21 +104,9 @@ export class CreateCraModalComponent implements OnInit {
   onSaveCra(): void {
     if (this.createCraForm.invalid) return;
 
-    const craObj = {
-      startDate: format(
-        new Date(this.createCraForm.value.startDate as string),
-        'yyyy-MM-dd'
-      ),
-      endDate: format(
-        new Date(this.createCraForm.value.endDate as string),
-        'yyyy-MM-dd'
-      ),
-      activities: this.createCraForm.value.activities,
-    };
-
     this.dialogRef.close(
       (this.data = {
-        craObj,
+        craObj: this.createCraForm.value,
         isFormValid: !this.createCraForm.invalid,
       })
     );
