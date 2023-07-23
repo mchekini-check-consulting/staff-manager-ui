@@ -1,0 +1,20 @@
+<div
+  class="drop-zone"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="onClick($event)"
+>
+  <p *ngIf="showDrag">Cliquer ou Glisser un fichier.</p>
+  <input
+    #fileInput
+    class="input-file"
+    type="file"
+    (change)="onChange($event)"
+  />
+  <div *ngFor="let file of currentFiles" class="uploaded-file">
+    <i class="nc-icon nc-notes file-icon"></i>
+    <p class="file-name">{{ file.name }}</p>
+    <p class="file-size">{{ (file.size / 1_000_000).toFixed(2) }} KB</p>
+  </div>
+</div>

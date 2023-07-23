@@ -1,1 +1,46 @@
-<h1>En cours de Dev</h1>
+<div class="container">
+  <div class="header">
+    <h1 class="title">Upload Des Justificatifs</h1>
+  </div>
+
+  <form class="form" [formGroup]="justificatifForm" (ngSubmit)="onFormSubmit()">
+    <mat-form-field class="type">
+      <mat-label>Type de justificatif</mat-label>
+      <input
+        type="text"
+        matInput
+        formControlName="type"
+        [matAutocomplete]="auto"
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayOptionLabel"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions | async"
+          [value]="option"
+        >
+          {{ option.label }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <file-input class="file-input" [filesControl]="filesControl"></file-input>
+    <div class="buttons">
+      <button
+        class="submit-button"
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!justificatifForm.valid"
+      >
+        <mat-spinner
+          class="loading-spinner"
+          color="accent"
+          diameter="20"
+          *ngIf="apiLoading"
+        ></mat-spinner>
+        <span *ngIf="!apiLoading">Soumettre</span>
+      </button>
+    </div>
+  </form>
+</div>

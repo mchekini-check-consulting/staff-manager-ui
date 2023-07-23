@@ -1,0 +1,34 @@
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  height: 8rem;
+}
+
+.drop-zone.drag-over {
+  border-color: #007bff;
+}
+
+.input-file {
+  display: none;
+}
+
+.file-icon {
+  font-size: 30px;
+  font-weight: 600;
+  color: #2ec520;
+  margin-bottom: 0.8rem;
+}
+
+.file-name {
+  margin: 0;
+}
+
+.file-size {
+  margin: 0;
+}
