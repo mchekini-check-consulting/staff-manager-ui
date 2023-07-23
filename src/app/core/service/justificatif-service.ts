@@ -6,7 +6,7 @@ import {
   JustificatifModelOut,
 } from '../model/justificatif-model';
 
-const BASE_URL = '/api/v1/app';
+const BASE_URL = '/api/v1';
 
 @Injectable({
   providedIn: 'root',
