@@ -19,6 +19,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ErrorDialogComponent } from './core/template/components/error-dialog/error-dialog.component';
 import { FooterComponent } from './core/template/components/footer/footer.component';
@@ -35,6 +36,8 @@ import { ProfileInformationComponent } from './features/profile-information/prof
 
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { CreateCraModalComponent } from './core/template/components/create-cra-modal/create-cra-modal.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FileInputComponent } from './core/template/components/file-input/file-input.component';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -49,6 +52,7 @@ export const MY_DATE_FORMATS = {
 };
 
 const ANGULAR_MATERIAL = [
+  MatAutocompleteModule,
   MatButtonModule,
   MatDialogModule,
   MatFormFieldModule,
@@ -57,6 +61,7 @@ const ANGULAR_MATERIAL = [
   MatDatepickerModule,
   MatSlideToggleModule,
   MatIconModule,
+  MatProgressSpinnerModule,
   MatNativeDateModule,
 ];
 const COMPONENTS = [
@@ -68,6 +73,7 @@ const COMPONENTS = [
   NavbarComponent,
   SidebarComponent,
   CreateCraModalComponent,
+  FileInputComponent,
 ];
 const PAGES = [
   TemplateComponent,
