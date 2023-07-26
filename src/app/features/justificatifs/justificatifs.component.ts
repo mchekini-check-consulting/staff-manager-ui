@@ -97,6 +97,7 @@ export class JustificatifsComponent implements OnInit {
         .subscribe(
           (res) => {
             this.apiLoading = false;
+
             Swal.fire({
               title: 'Succés',
               text: 'Vos justificatifs ont été soumis avec succés.',
@@ -108,7 +109,7 @@ export class JustificatifsComponent implements OnInit {
             this.apiLoading = false;
             Swal.fire({
               title: 'Erreur!',
-              text: 'Une erreur est survénu lors de la soumission de votre document.',
+              text: err.error,
               icon: 'error',
               confirmButtonText: 'OK',
             });
