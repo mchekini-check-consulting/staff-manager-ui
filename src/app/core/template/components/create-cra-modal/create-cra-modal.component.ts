@@ -69,10 +69,8 @@ export class CreateCraModalComponent implements OnInit {
   }
 
   createCraForm = this.fb.group({
-    // startDate: [new Date(), [Validators.required]],
-    // endDate: [new Date(), [Validators.required]],
-    startDate: ['', [Validators.required]],
-    endDate: ['', [Validators.required]],
+    startDate: [this.data.date, [Validators.required]],
+    endDate: [this.data.date, [Validators.required]],
     activities: this.fb.array([this.createForm()]),
   });
 

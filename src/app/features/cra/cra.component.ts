@@ -38,6 +38,7 @@ export class CraComponent implements OnInit {
   isFormValid: boolean = false;
   events: any[] = [];
   craObj: any;
+  craToSubmit: any = [];
 
   constructor(
     public dialog: MatDialog,
@@ -48,7 +49,6 @@ export class CraComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('1: ');
     this.holidaysService.getPublicHolidays().subscribe((res) => {
       this.HOLIDAYS = res.map((d) => {
         return {
@@ -58,12 +58,10 @@ export class CraComponent implements OnInit {
           color: 'gray',
         };
       });
-      // console.log('holidays: ', this.HOLIDAYS);
 
       const weekEnds = this.holidaysService.getWeekEnds();
       const addEvents = [...this.HOLIDAYS, ...weekEnds];
 
-      console.log('addEvents: ', addEvents);
       // set all events
       this.events = addEvents;
       this.calendarOptions.events = addEvents;
@@ -100,59 +98,48 @@ export class CraComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      let newCra;
-
       this.isFormValid = result.isFormValid;
-      this.craObj = result.craObj;
 
       const craTitle = result.craObj.activities
-        .map((act: any) => act.category.split('_').join(' '))
+        .map((act: any) => act.category.replaceAll('_', ' '))
         .join(' / ');
 
-      if (result.craObj.startDate !== result.craObj.endDate) {
-        newCra = {
-          title: craTitle,
-          start: result.craObj.startDate,
-          end: this.adjustEndDate(result.craObj.endDate),
-          color: 'blue',
-          textColor: 'white',
-        };
-      } else {
-        newCra = {
-          title: craTitle,
-          date: result.craObj.startDate,
-          color: 'blue',
-          textColor: 'white',
-        };
-      }
+      const newCra = {
+        title: craTitle,
+        start: format(result.craObj.startDate, 'yyyy-MM-dd'),
+        end: this.adjustEndDate(result.craObj.endDate),
+        color: 'blue',
+        textColor: 'white',
+      };
 
       this.calendarOptions.events = [...this.events, newCra];
       this.events.push(newCra);
+
+      const dates = this.getDatesArray(
+        result.craObj.startDate,
+        result.craObj.endDate
+      );
+
+      let activities: IActivity[] = [];
+      for (let j = 0; j < dates.length; j++) {
+        for (let i = 0; i < result.craObj.activities.length; i++) {
+          activities.push({
+            date: format(dates[j], 'yyyy-MM-dd'),
+            quantity: result.craObj.activities[i].quantity,
+            category: result.craObj.activities[i].category,
+            comment: result.craObj.activities[i].comment,
+          });
+        }
+      }
+
+      this.craToSubmit.push(...activities);
     });
   }
 
   // ********* FORM (handling) *********
   onSubmitCra(): void {
     if (!this.isFormValid) return;
-
-    const dates = this.getDatesArray(
-      this.craObj.startDate,
-      this.craObj.endDate
-    );
-
-    let activities: IActivity[] = [];
-    for (let j = 0; j < dates.length; j++) {
-      for (let i = 0; i < this.craObj.activities.length; i++) {
-        activities.push({
-          date: format(dates[j], 'yyyy-MM-dd'),
-          quantity: this.craObj.activities[i].quantity,
-          category: this.craObj.activities[i].category,
-          comment: this.craObj.activities[i].comment,
-        });
-      }
-    }
-
-    this.craService.createCra({ activities }).subscribe(
+    this.craService.createCra({ activities: this.craToSubmit }).subscribe(
       (res) => {
         this.dialogConfig.data = {
           successMessage: "La soumission du CRA s'est déroulé avec succès",
