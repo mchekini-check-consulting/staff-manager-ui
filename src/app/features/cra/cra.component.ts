@@ -148,7 +148,7 @@ export class CraComponent implements OnInit {
       },
       (err) => {
         console.log('ERR: ', err);
-        this.dialogConfig.data = { errorMessage: err.message };
+        this.dialogConfig.data = { errorMessage: err.error.message };
         this.errorService.handleError(this.dialogConfig);
       }
     );

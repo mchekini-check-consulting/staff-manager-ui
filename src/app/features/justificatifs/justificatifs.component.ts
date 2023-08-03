@@ -109,7 +109,7 @@ export class JustificatifsComponent implements OnInit {
             this.apiLoading = false;
             Swal.fire({
               title: 'Erreur!',
-              text: err.error,
+              text: err.error.message,
               icon: 'error',
               confirmButtonText: 'OK',
             });
