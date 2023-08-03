@@ -1,6 +1,6 @@
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from "@angular/common/http";
 import {OAuthService} from "angular-oauth2-oidc";
-import {Observable} from "rxjs";
+import {Observable, map} from "rxjs";
 import {Injectable} from "@angular/core";
 
 
@@ -21,6 +21,17 @@ export class HttpRequestInterceptor implements HttpInterceptor {
       })
     }
 
-    return next.handle(req);
+   
+    return next.handle(req).pipe(
+      map((event: HttpEvent<any>) => {
+        if (event instanceof HttpResponse) {
+          if (event.body && event.body.payload) {
+            event = event.clone({ body: event.body.payload });
+          }
+        }
+        return event;
+      })
+    );
+    
   }
 }
