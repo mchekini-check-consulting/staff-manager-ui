@@ -4,7 +4,6 @@ import {TemplateComponent} from "./core/template/container/template.component";
 import {CraComponent} from "./features/cra/cra.component";
 import {JustificatifsComponent} from "./features/justificatifs/justificatifs.component";
 import {FicheDePaieComponent} from "./features/fiche-de-paie/fiche-de-paie.component";
-import {DocumentationComponent} from "./features/documentation/documentation.component";
 import {ProfileInformationComponent} from "./features/profile-information/profile-information.component";
 
 const routes: Routes = [
@@ -22,10 +21,6 @@ const routes: Routes = [
       {
         path: 'justificatifs',
         component: JustificatifsComponent
-      },
-      {
-        path: 'documentation',
-        component: DocumentationComponent
       },
       {
         path : "profile-informations",

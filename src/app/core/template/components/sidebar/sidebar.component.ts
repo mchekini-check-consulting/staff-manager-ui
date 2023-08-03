@@ -15,7 +15,6 @@ export const ROUTES: RouteInfo[] = [
   {path: '/fiche-de-paie', title: 'Fiche de paie', icon: 'nc-icon nc-layers-3', class: ''},
   {path: '/justificatifs', title: 'Upload des Justificatifs', icon: 'nc-icon nc-cloud-upload-94', class: ''},
   {path: '/profile-informations', title: 'Mes Informations', icon: 'nc-icon nc-single-copy-04', class: ''},
-  {path: '/documentation', title: 'Documentation', icon: 'nc-icon nc-single-copy-04', class: ''},
 ];
 
 
