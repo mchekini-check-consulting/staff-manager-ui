@@ -29,7 +29,6 @@ import { SuccessDialogComponent } from './core/template/components/success-dialo
 
 import { TemplateComponent } from './core/template/container/template.component';
 import { CraComponent } from './features/cra/cra.component';
-import { DocumentationComponent } from './features/documentation/documentation.component';
 import { FicheDePaieComponent } from './features/fiche-de-paie/fiche-de-paie.component';
 import { JustificatifsComponent } from './features/justificatifs/justificatifs.component';
 import { ProfileInformationComponent } from './features/profile-information/profile-information.component';
@@ -38,6 +37,8 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { CreateCraModalComponent } from './core/template/components/create-cra-modal/create-cra-modal.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FileInputComponent } from './core/template/components/file-input/file-input.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -63,6 +64,8 @@ const ANGULAR_MATERIAL = [
   MatIconModule,
   MatProgressSpinnerModule,
   MatNativeDateModule,
+  MatTableModule,
+  MatPaginatorModule
 ];
 const COMPONENTS = [
   FooterComponent,
@@ -77,7 +80,6 @@ const COMPONENTS = [
 ];
 const PAGES = [
   TemplateComponent,
-  DocumentationComponent,
   CraComponent,
   FicheDePaieComponent,
   JustificatifsComponent,
