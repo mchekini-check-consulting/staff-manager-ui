@@ -4,3 +4,63 @@ h1{
   left: 50%;
   transform: translate(-50%,-50%);
 }
+
+table {
+  width: 100%;
+}
+
+.actions-group {
+  display : flex;
+  justify-content: flex-end;
+}
+
+.header-cell {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.example-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 56px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height : 100%;
+}
+
+.filters-section {
+  display : flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: .5rem;
+}
+.filters-section button {
+  margin-bottom: 22px;
+}
+
+.example-month-picker .mat-calendar-period-button {
+  pointer-events: none;
+}
+
+.example-month-picker .mat-calendar-arrow {
+  display: none;
+}
+
+.no-data-label {
+  font-size: large;
+}
+.no-data-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap : 1rem;
+  height : 100%;
+  padding: 1rem;
+}

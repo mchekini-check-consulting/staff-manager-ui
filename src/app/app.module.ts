@@ -83,7 +83,6 @@ const COMPONENTS = [
 const PAGES = [
   TemplateComponent,
   CraComponent,
-  FicheDePaieComponent,
   JustificatifsComponent,
   ProfileInformationComponent,
 ];
@@ -98,6 +97,7 @@ const PAGES = [
     OAuthModule.forRoot(),
     BrowserAnimationsModule,
     FormsModule,
+    FicheDePaieComponent,
     ...ANGULAR_MATERIAL,
   ],
   providers: [
