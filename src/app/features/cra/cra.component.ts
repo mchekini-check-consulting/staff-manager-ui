@@ -7,18 +7,30 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { format } from 'date-fns';
+import { IActivity } from 'src/app/core/model/cra-model';
 import { HolidayService } from 'src/app/core/service/holiday-service';
-import { CreateCraModalComponent } from 'src/app/core/template/components/create-cra-modal/create-cra-modal.component';
+import { CreateCraHandlerService } from 'src/app/core/template/components/create-cra-modal/create-cra.service';
 import { ErrorHandlerService } from 'src/app/core/template/components/error-dialog/error-handler.service';
+import { InfoHandlerService } from 'src/app/core/template/components/info-dialog/info-handler.service';
 import { SucessHandlerService } from 'src/app/core/template/components/success-dialog/success-dialog.service';
 import { CraService } from '../../core/service/cra-service';
-import { IActivity } from 'src/app/core/model/cra-model';
 
-type CustomHoliday = {
+type EventType = {
   title: string;
+  display?: string;
+  color?: string;
   date: string;
-  display: string;
-  color: string;
+  textColor?: string;
+};
+
+type CraObjType = {
+  startDate: Date;
+  endDate: Date;
+  activities: {
+    category: string;
+    quantity: number;
+    comment?: string;
+  }[];
 };
 
 @Component({
@@ -27,7 +39,7 @@ type CustomHoliday = {
   styleUrls: ['./cra.component.scss'],
 })
 export class CraComponent implements OnInit {
-  HOLIDAYS: CustomHoliday[] = [];
+  HOLIDAYS_EVENTS: EventType[] = [];
   title: string = "Création d'un compte rendu d'activité";
   dialogConfig: any = {
     height: '250px',
@@ -36,35 +48,36 @@ export class CraComponent implements OnInit {
     data: {},
   };
   isFormValid: boolean = false;
-  events: any[] = [];
-  craObj: any;
-  craToSubmit: any = [];
+  events: EventType[] = [];
+  craToSubmit: IActivity[] = [];
 
   constructor(
     public dialog: MatDialog,
     private craService: CraService,
     private errorService: ErrorHandlerService,
     private successService: SucessHandlerService,
-    private holidaysService: HolidayService
+    private holidaysService: HolidayService,
+    private infoService: InfoHandlerService,
+    private createCraService: CreateCraHandlerService
   ) {}
 
   ngOnInit() {
     this.holidaysService.getPublicHolidays().subscribe((res) => {
-      this.HOLIDAYS = res.map((d) => {
+      this.HOLIDAYS_EVENTS = res.map((d) => {
         return {
-          title: d.localName,
+          title: 'holiday',
           date: d.date,
           display: 'background',
           color: 'gray',
         };
       });
 
-      const weekEnds = this.holidaysService.getWeekEnds();
-      const addEvents = [...this.HOLIDAYS, ...weekEnds];
+      const weekends = this.holidaysService.getWeekEnds();
+      const eventList = [...this.HOLIDAYS_EVENTS, ...weekends];
 
       // set all events
-      this.events = addEvents;
-      this.calendarOptions.events = addEvents;
+      this.events = [...eventList];
+      this.calendarOptions.events = [...eventList];
     });
   }
 
@@ -83,56 +96,49 @@ export class CraComponent implements OnInit {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
-    select: this.handleSeclectedDay.bind(this),
+    select: this.onSelectDate.bind(this),
     height: '650px',
   };
 
-  handleSeclectedDay(selectInfo: DateSelectArg) {
-    const dialogRef = this.dialog.open(CreateCraModalComponent, {
+  onSelectDate(selectedDate: DateSelectArg) {
+    const dialogConfigModal = {
       height: '650px',
       width: '600px',
       disableClose: true,
       data: {
-        date: selectInfo.start,
+        date: selectedDate.start,
       },
-    });
+    };
 
-    dialogRef.afterClosed().subscribe((result) => {
-      this.isFormValid = result.isFormValid;
+    const isRestDay = this.events
+      .filter((ev) => ev.title === 'week-end' || ev.title === 'holiday')
+      .map((d) => d.date)
+      .includes(selectedDate.startStr);
 
-      const craTitle = result.craObj.activities
-        .map((act: any) => act.category.replaceAll('_', ' '))
-        .join(' / ');
-
-      const newCra = {
-        title: craTitle,
-        start: format(result.craObj.startDate, 'yyyy-MM-dd'),
-        end: this.adjustEndDate(result.craObj.endDate),
-        color: 'blue',
-        textColor: 'white',
+    if (isRestDay) {
+      this.dialogConfig.data = {
+        infoMessage:
+          'Attention vous venez de séléctionner un jour férier ou un weeke-end',
       };
+      const dialogInfo = this.infoService.handleInfo(this.dialogConfig);
 
-      this.calendarOptions.events = [...this.events, newCra];
-      this.events.push(newCra);
+      dialogInfo.afterClosed().subscribe((res) => {
+        const dialogRefModalForm =
+          this.createCraService.open(dialogConfigModal);
 
-      const dates = this.getDatesArray(
-        result.craObj.startDate,
-        result.craObj.endDate
-      );
+        dialogRefModalForm.afterClosed().subscribe((res) => {
+          this.isFormValid = res.isFormValid;
+          this.onHandle(res.craObj);
+        });
+      });
 
-      let activities: IActivity[] = [];
-      for (let j = 0; j < dates.length; j++) {
-        for (let i = 0; i < result.craObj.activities.length; i++) {
-          activities.push({
-            date: format(dates[j], 'yyyy-MM-dd'),
-            quantity: result.craObj.activities[i].quantity,
-            category: result.craObj.activities[i].category,
-            comment: result.craObj.activities[i].comment,
-          });
-        }
-      }
+      return;
+    }
+    const dialogRefModalForm = this.createCraService.open(dialogConfigModal);
 
-      this.craToSubmit.push(...activities);
+    dialogRefModalForm.afterClosed().subscribe((res) => {
+      this.isFormValid = res.isFormValid;
+      this.onHandle(res.craObj);
     });
   }
 
@@ -154,12 +160,11 @@ export class CraComponent implements OnInit {
     );
   }
 
-  adjustEndDate(date: string) {
+  adjustEndDate(date: Date): Date {
     const currentDate = new Date(date);
     currentDate.setDate(currentDate.getDate() + 1);
-    return format(currentDate, 'yyyy-MM-dd');
+    return currentDate;
   }
-
   getDatesArray(startDate: Date, endDate: Date): Date[] {
     const datesArray: Date[] = [];
     const currentDate = new Date(startDate);
@@ -170,5 +175,107 @@ export class CraComponent implements OnInit {
     }
 
     return datesArray;
+  }
+  areDatesConsecutive(dates: string[]): boolean {
+    const dateObjects: Date[] = dates.map((d) => new Date(d));
+
+    for (let i = 1; i < dateObjects.length; i++) {
+      const diffInDays =
+        (dateObjects[i].getTime() - dateObjects[i - 1].getTime()) /
+        (1000 * 60 * 60 * 24);
+      if (diffInDays !== 1) return false;
+    }
+
+    return true;
+  }
+
+  onHandle(craObj: CraObjType) {
+    const dates = this.getDatesArray(craObj.startDate, craObj.endDate).map(
+      (d) => format(d, 'yyyy-MM-dd')
+    );
+
+    let list1: string[] = [];
+    let list2: string[] = [];
+
+    const restDays = this.events.filter(
+      (ev) => ev.title === 'week-end' || ev.title === 'holiday'
+    );
+
+    const workDays = this.events.filter(
+      (ev) => ev.title !== 'week-end' && ev.title !== 'holiday'
+    );
+
+    for (let i = 0; i < dates.length; i++) {
+      const currentDate = dates[i];
+
+      if (restDays.map((d) => d.date).includes(currentDate)) {
+        list1.push(currentDate);
+      }
+
+      if (workDays.map((d) => d.date).includes(currentDate)) {
+        list2.push(currentDate);
+      }
+
+      if (
+        !workDays.map((d) => d.date).includes(currentDate) &&
+        !restDays.map((d) => d.date).includes(currentDate)
+      ) {
+        list2.push(currentDate);
+      }
+    }
+
+    if (list2.length > 0) {
+      // les jours de travail hors weekEnds / holidays selected
+      this.addEvent(craObj, list2);
+      this.generateActivities(craObj, list2);
+      return;
+    }
+    if (list1.length > 0 && this.areDatesConsecutive(list1)) {
+      // les weekEnds / holidays only selected
+      this.addEvent(craObj, list1);
+      this.generateActivities(craObj, list1);
+      return;
+    } else return;
+  }
+  generateActivities(craObj: CraObjType, dates: string[]) {
+    let activities: IActivity[] = [];
+    for (let j = 0; j < dates.length; j++) {
+      for (let i = 0; i < craObj.activities.length; i++) {
+        activities.push({
+          date: dates[j],
+          quantity: craObj.activities[i].quantity,
+          category: craObj.activities[i].category,
+          comment: craObj.activities[i].comment,
+        });
+      }
+    }
+
+    this.craToSubmit.push(...activities);
+  }
+  addEvent(craObj: CraObjType, dates: string[]) {
+    const activities = craObj.activities;
+    let newEventsToAdd: EventType[] = [];
+
+    for (let i = 0; i < activities.length; i++) {
+      const title = `${activities[i].quantity}h ${activities[
+        i
+      ].category.replaceAll('_', ' ')}`;
+
+      newEventsToAdd.push(
+        ...dates.map((el) => {
+          return {
+            title: title,
+            date: el,
+            color: 'blue',
+            textColor: 'white',
+          };
+        })
+      );
+    }
+
+    if (newEventsToAdd.length === 0) return;
+
+    this.calendarOptions.events = [...this.events, ...newEventsToAdd];
+    this.events.push(...newEventsToAdd);
   }
 }

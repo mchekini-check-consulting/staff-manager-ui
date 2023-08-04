@@ -39,6 +39,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FileInputComponent } from './core/template/components/file-input/file-input.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { InfoDialogComponent } from './core/template/components/info-dialog/info-dialog.component';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -77,6 +78,7 @@ const COMPONENTS = [
   SidebarComponent,
   CreateCraModalComponent,
   FileInputComponent,
+  InfoDialogComponent,
 ];
 const PAGES = [
   TemplateComponent,
