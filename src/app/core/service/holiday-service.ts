@@ -41,7 +41,7 @@ export class HolidayService {
 
     return weekends.map((d: any) => {
       return {
-        title: '',
+        title: 'week-end',
         date: format(new Date(d), 'yyyy-MM-dd'),
         display: 'background',
         color: 'gray',
