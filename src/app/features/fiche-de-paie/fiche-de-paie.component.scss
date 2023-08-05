@@ -19,42 +19,22 @@ table {
   text-transform: uppercase;
 }
 
-.example-loading-shade {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 56px;
-  right: 0;
-  background: rgba(0, 0, 0, 0.15);
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height : 100%;
-}
-
 .filters-section {
-  display : flex;
-  justify-content: space-between;
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
-  padding: .5rem;
-}
-.filters-section button {
-  margin-bottom: 22px;
+  padding: .5rem .5rem 0rem .5rem;
 }
 
-.example-month-picker .mat-calendar-period-button {
-  pointer-events: none;
-}
-
-.example-month-picker .mat-calendar-arrow {
-  display: none;
+.filters-section button{
+  margin-top: -22px;
 }
 
 .no-data-label {
   font-size: large;
 }
+
 .no-data-container {
   display: flex;
   align-items: center;
@@ -62,5 +42,11 @@ table {
   flex-direction: column;
   gap : 1rem;
   height : 100%;
-  padding: 1rem;
+  padding: 2rem 1rem;
+}
+
+.invalid-date-message {
+  color : red;
+  font-weight: bold;
+  font-size: 11px;
 }

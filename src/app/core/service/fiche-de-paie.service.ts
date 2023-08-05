@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn : "root",
 })
 export class FicheDePaieService {
-  private apiUrl = '/api/v1/fiche-de-paie';
+  private apiUrl = '/api/v1/paysheet/search';
 
   constructor(private http: HttpClient) {}
 

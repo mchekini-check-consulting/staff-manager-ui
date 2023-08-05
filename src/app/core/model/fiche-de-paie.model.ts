@@ -6,6 +6,6 @@ export interface FicheDePaie {
 }
 
 export interface FicheDePaiePostBody {
-  startDate ?: Date;
-  endDate ?: Date;
+  startDate ?: string | null;
+  endDate ?: string | null;
 }
