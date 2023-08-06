@@ -39,6 +39,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { format, isValid } from 'date-fns';
 import Swal from 'sweetalert2';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FileViewerDialogComponent } from 'src/app/core/template/components/file-viewer-dialog/file-viewer-dialog.component';
 
 const moment = _moment;
 
@@ -80,6 +82,7 @@ export const MY_FORMATS = {
     MatIconModule,
     MatButtonModule,
     CommonModule,
+    MatDialogModule,
   ],
 })
 export class FicheDePaieComponent implements AfterViewInit, OnInit {
@@ -89,7 +92,10 @@ export class FicheDePaieComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-  constructor(private ficheDePaieService: FicheDePaieService) {}
+  constructor(
+    private ficheDePaieService: FicheDePaieService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.getFichesDePaie();
@@ -114,25 +120,25 @@ export class FicheDePaieComponent implements AfterViewInit, OnInit {
     };
 
     this.ficheDePaieService.getFichesDePaie(body).subscribe(
-    (res) => {
-      this.dataSource.data = res;
-    },
-    (err) => {
-      let errorText = err?.error?.message + "\n";
+      (res) => {
+        this.dataSource.data = res;
+      },
+      (err) => {
+        let errorText = err?.error?.message + '\n';
 
-      if (err.validations) {
-        for (const key in err.validations) {
-            errorText += key+" : "+ err.validations[key] + "\n";
+        if (err.validations) {
+          for (const key in err.validations) {
+            errorText += key + ' : ' + err.validations[key] + '\n';
+          }
         }
+
+        Swal.fire({
+          title: 'Erreur!',
+          text: errorText,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
       }
-      
-      Swal.fire({
-        title: 'Erreur!',
-        text: errorText,
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-    }
     );
   }
 
@@ -185,5 +191,36 @@ export class FicheDePaieComponent implements AfterViewInit, OnInit {
       return this.endDate.value.isAfter(this.startDate.value);
     }
     return true;
+  }
+
+  handleDownload(name: string) {
+    this.downloadPDF(name);
+  }
+
+  downloadPDF(fileName: string) {
+    this.ficheDePaieService
+      .downloadFicheDePaie(fileName)
+      .subscribe((data: Blob) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+        link.remove();
+      });
+  }
+
+  displayFile(fileName: string) {
+    const dialogRef = this.dialog.open(FileViewerDialogComponent, {
+      width: '80%',
+      height: '80%',
+      data: { fileName },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {});
   }
 }

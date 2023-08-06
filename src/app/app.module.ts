@@ -40,6 +40,8 @@ import { FileInputComponent } from './core/template/components/file-input/file-i
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { InfoDialogComponent } from './core/template/components/info-dialog/info-dialog.component';
+import { FileViewerDialogComponent } from './core/template/components/file-viewer-dialog/file-viewer-dialog.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -66,7 +68,7 @@ const ANGULAR_MATERIAL = [
   MatProgressSpinnerModule,
   MatNativeDateModule,
   MatTableModule,
-  MatPaginatorModule
+  MatPaginatorModule,
 ];
 const COMPONENTS = [
   FooterComponent,
@@ -87,7 +89,12 @@ const PAGES = [
   ProfileInformationComponent,
 ];
 @NgModule({
-  declarations: [AppComponent, ...COMPONENTS, ...PAGES],
+  declarations: [
+    AppComponent,
+    ...COMPONENTS,
+    ...PAGES,
+    FileViewerDialogComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -98,6 +105,7 @@ const PAGES = [
     BrowserAnimationsModule,
     FormsModule,
     FicheDePaieComponent,
+    NgxExtendedPdfViewerModule,
     ...ANGULAR_MATERIAL,
   ],
   providers: [
