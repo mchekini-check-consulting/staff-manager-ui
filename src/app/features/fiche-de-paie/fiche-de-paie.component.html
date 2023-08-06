@@ -1,1 +1,98 @@
-<h1>En cours de Dev</h1>
+<div class="mat-elevation-z8">
+  <div class="filters-section">
+      <mat-form-field>
+        <mat-label>Début intérvalle</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startDateRef"
+          [formControl]="startDate"
+          readonly="true"
+        />
+        <mat-hint class="invalid-date-message" *ngIf="!startDateIsValid()">Veuillez saisir à nouveau les dates</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="startDateRef"
+        ></mat-datepicker-toggle>
+        <mat-datepicker
+          #startDateRef
+          startView="multi-year"
+          (monthSelected)="setIntervalStart($event, startDateRef)"
+          panelClass="example-month-picker"
+        >
+        </mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Fin intérvalle</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endDateRef"
+          [formControl]="endDate"
+          readonly="true"
+        />
+        <mat-hint class="invalid-date-message" *ngIf="!endDateIsValid()">Veuillez saisir à nouveau les dates</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="endDateRef"
+        ></mat-datepicker-toggle>
+        <mat-datepicker
+          #endDateRef
+          startView="multi-year"
+          (monthSelected)="setIntervalEnd($event, endDateRef)"
+          panelClass="example-month-picker"
+        >
+        </mat-datepicker>
+      </mat-form-field>
+    <button mat-raised-button color="primary" (click)="getFichesDePaie()">Rechercher</button>
+  </div>
+  <ng-container *ngIf="dataSource.filteredData.length >= 1">
+    <table mat-table [dataSource]="dataSource">
+      <!-- Nom du fichier Column -->
+      <ng-container matColumnDef="fileName">
+        <th class="header-cell" mat-header-cell *matHeaderCellDef>
+          Nom du fichier
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+  
+      <!-- Période Column -->
+      <ng-container matColumnDef="timePeriod">
+        <th class="header-cell" mat-header-cell *matHeaderCellDef>Période</th>
+        <td mat-cell *matCellDef="let element">{{ element.monthYear }}</td>
+      </ng-container>
+  
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th class="header-cell" mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <div class="actions-group">
+            <button mat-button>
+              <mat-icon>file_download</mat-icon>
+              Télécharger
+            </button>
+            <button mat-button>
+              <mat-icon>visibility</mat-icon>
+              Consulter
+            </button>
+          </div>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  
+    <!-- Paginateur -->
+    <mat-paginator
+      [pageSizeOptions]="[10, 25, 50]"
+      showFirstLastButtons
+      aria-label="Selectionner les pages des fiches de paies"
+    >
+    </mat-paginator>
+  </ng-container>
+  <ng-container *ngIf="dataSource.filteredData.length < 1">
+    <div class="no-data-container">
+      <mat-icon fontIcon="info"></mat-icon>
+      <mat-label class="no-data-label">Vous n'avez aucune fiche de paie</mat-label>
+    </div>
+  </ng-container>
+</div>
