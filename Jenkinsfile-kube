@@ -11,7 +11,7 @@ node("ci-node") {
                       credentialsId: "aws-user",
                      ]]) {
       sh "aws eks update-kubeconfig --region us-east-2 --name sm-cluster"
-      sh "helm upgrade sm-api sm-chart --install --create-namespace --namespace staff-manager"
+      sh "helm upgrade sm-collab sm-collab-chart --install --create-namespace --namespace staff-manager"
     }
 
 
