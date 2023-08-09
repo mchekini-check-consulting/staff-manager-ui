@@ -1,8 +1,3 @@
 <div class="pdf-container">
-  <object [data]="pdfUrl" type="application/pdf" width="100%" height="100%">
-    <p>
-      Your browser does not support PDFs. You can download the PDF
-      <a [href]="pdfUrl">here</a>.
-    </p>
-  </object>
+  <iframe [src]="pdfUrl" width="100%" height="100%" frameborder="0"></iframe>
 </div>

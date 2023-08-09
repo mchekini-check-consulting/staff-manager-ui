@@ -41,6 +41,7 @@ import { format, isValid } from 'date-fns';
 import Swal from 'sweetalert2';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FileViewerDialogComponent } from 'src/app/core/template/components/file-viewer-dialog/file-viewer-dialog.component';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 const moment = _moment;
 
@@ -94,7 +95,8 @@ export class FicheDePaieComponent implements AfterViewInit, OnInit {
 
   constructor(
     private ficheDePaieService: FicheDePaieService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -200,27 +202,35 @@ export class FicheDePaieComponent implements AfterViewInit, OnInit {
   downloadPDF(fileName: string) {
     this.ficheDePaieService
       .downloadFicheDePaie(fileName)
-      .subscribe((data: Blob) => {
+      .subscribe((data: ArrayBuffer) => {
         const blob = new Blob([data], { type: 'application/pdf' });
-
-        const url = window.URL.createObjectURL(blob);
+        const pdfUrl = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = url;
+        link.href = pdfUrl;
+        link.target = '_blank';
         link.download = fileName;
         link.click();
-
-        window.URL.revokeObjectURL(url);
-        link.remove();
+        window.URL.revokeObjectURL(pdfUrl);
       });
   }
 
   displayFile(fileName: string) {
-    const dialogRef = this.dialog.open(FileViewerDialogComponent, {
-      width: '80%',
-      height: '80%',
-      data: { fileName },
-    });
+    this.ficheDePaieService
+      .downloadFicheDePaie(fileName)
+      .subscribe((data: ArrayBuffer) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
+        const pdfUrl = window.URL.createObjectURL(blob);
 
-    dialogRef.afterClosed().subscribe(() => {});
+        const safePdfUrl: SafeResourceUrl =
+          this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl);
+
+        const dialogRef = this.dialog.open(FileViewerDialogComponent, {
+          width: '80%',
+          height: '80%',
+          data: { fileName, pdfUrl }, // Pass the PDF URL to the dialog
+        });
+
+        dialogRef.afterClosed().subscribe(() => {});
+      });
   }
 }

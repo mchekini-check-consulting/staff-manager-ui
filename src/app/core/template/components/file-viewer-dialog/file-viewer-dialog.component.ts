@@ -12,11 +12,9 @@ export class FileViewerDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<FileViewerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { fileName: string },
+    @Inject(MAT_DIALOG_DATA) public data: { fileName: string; pdfUrl: string },
     private sanitizer: DomSanitizer
   ) {
-    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      'https://www.africau.edu/images/default/sample.pdf'
-    );
+    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(data.pdfUrl);
   }
 }

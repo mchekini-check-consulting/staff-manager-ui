@@ -41,7 +41,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { InfoDialogComponent } from './core/template/components/info-dialog/info-dialog.component';
 import { FileViewerDialogComponent } from './core/template/components/file-viewer-dialog/file-viewer-dialog.component';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -105,7 +104,6 @@ const PAGES = [
     BrowserAnimationsModule,
     FormsModule,
     FicheDePaieComponent,
-    NgxExtendedPdfViewerModule,
     ...ANGULAR_MATERIAL,
   ],
   providers: [
