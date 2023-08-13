@@ -16,9 +16,9 @@ node("ci-node") {
     withCredentials([usernamePassword(credentialsId: 'mchekini', usernameVariable: 'username',
       passwordVariable: 'password')]) {
       sh "sudo docker login -u mchekini -p $password"
-      sh "sudo docker tag staff-manager-ui mchekini/staff-manager-ui:$branchName"
-      sh "sudo docker push mchekini/staff-manager-ui:$branchName"
-      sh "sudo docker rmi mchekini/staff-manager-ui:$branchName"
+      sh "sudo docker tag staff-manager-ui mchekini/staff-manager-ui:$version"
+      sh "sudo docker push mchekini/staff-manager-ui:$version"
+      sh "sudo docker rmi mchekini/staff-manager-ui:$version"
       sh "sudo docker rmi staff-manager-ui"
       stash includes: 'docker-compose.yml', name: 'utils'
     }
