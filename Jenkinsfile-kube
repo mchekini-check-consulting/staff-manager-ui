@@ -1,0 +1,34 @@
+node("ci-node") {
+  stage("checkout") {
+    checkout scmGit(branches: [[name: "master"]], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mchekini-check-consulting/staff-manager-ui']])
+  }
+
+  stage("build") {
+    sh "npm install"
+    sh "npm run build"
+  }
+
+  stage("build image") {
+    sh "sudo docker build -t staff-manager-ui ."
+  }
+
+  stage("push docker image") {
+    withCredentials([usernamePassword(credentialsId: 'mchekini', usernameVariable: 'username',
+      passwordVariable: 'password')]) {
+      sh "sudo docker login -u mchekini -p $password"
+      sh "sudo docker tag staff-manager-ui mchekini/staff-manager-ui:$branchName"
+      sh "sudo docker push mchekini/staff-manager-ui:$branchName"
+      sh "sudo docker rmi mchekini/staff-manager-ui:$branchName"
+      sh "sudo docker rmi staff-manager-ui"
+      stash includes: 'docker-compose.yml', name: 'utils'
+    }
+  }
+
+  stage("deploy-to-k8s") {
+       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "aws-user"]]) {
+            sh "aws eks update-kubeconfig --region us-east-2 --name sm-cluster"
+            sh "helm upgrade sm-collab sm-collab-chart --install --create-namespace --namespace staff-manager"
+        }
+    }
+
+}
